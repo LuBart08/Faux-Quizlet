@@ -923,8 +923,16 @@ function checkWriteAnswer() {
 function scoreAnswer(user,expected) {
   const u=user.toLowerCase().trim(), e=expected.toLowerCase().trim();
   if (u===e) return 'correct';
+  // Collapse all whitespace variations — "Le Caire" vs "Le  Caire" or "LeCaire" all count as correct
+  const normSpaces=s=>s.replace(/\s+/g,' ').trim();
+  if (normSpaces(u)===normSpaces(e)) return 'correct';
+  // Strip spaces entirely — "Buenos Aires" vs "BuenosAires"
+  const noSpace=s=>s.replace(/\s/g,'');
+  if (noSpace(u)===noSpace(e)) return 'correct';
+  // Normalize accents + punctuation + whitespace
   const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim();
   if (norm(u)===norm(e)) return 'correct';
+  if (noSpace(norm(u))===noSpace(norm(e))) return 'correct';
   const dist=levenshtein(u,e), maxLen=Math.max(u.length,e.length);
   if (dist<=Math.max(1,Math.floor(maxLen*0.2))) return 'almost';
   if (e.includes(u)&&u.length>=e.length*0.6) return 'almost';
