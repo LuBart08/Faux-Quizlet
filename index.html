@@ -4,241 +4,368 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FlashLearn — Apprends sans limites</title>
+<title>FlashLearn</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0a12; --surface: #13131f; --surface2: #1c1c2e; --border: #2a2a42;
-    --accent: #6c63ff; --accent2: #ff6584; --accent3: #43e97b;
-    --text: #e8e8f0; --text-muted: #7a7a9d; --card-flip: 0.6s; --radius: 18px;
-  }
-  * { box-sizing:border-box; margin:0; padding:0; -webkit-text-fill-color:inherit; }
-  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); -webkit-text-fill-color:var(--text); min-height:100vh; overflow-x:hidden; }
-  body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
-    background: radial-gradient(ellipse 60% 40% at 20% 10%,rgba(108,99,255,.18) 0%,transparent 70%),
-                radial-gradient(ellipse 50% 40% at 80% 80%,rgba(255,101,132,.12) 0%,transparent 70%); }
+:root {
+  --bg:#0a0a12; --surface:#13131f; --surface2:#1c1c2e; --border:#2a2a42;
+  --accent:#6c63ff; --accent2:#ff6584; --accent3:#43e97b; --gold:#fbbf24;
+  --text:#e8e8f0; --muted:#7a7a9d; --radius:18px;
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+/* Global color reset so gradient text never leaks into children */
+* { color:inherit; -webkit-text-fill-color:currentColor; }
 
-/* NAV */
-nav { position:sticky; top:0; z-index:100; display:flex; align-items:center; justify-content:space-between;
-padding:0 28px; height:64px; background:rgba(10,10,18,.85); backdrop-filter:blur(20px); border-bottom:1px solid var(–border); }
-.logo { font-family:‘Syne’,sans-serif; font-weight:800; font-size:1.35rem; background:linear-gradient(135deg,#6c63ff,#43e97b);
--webkit-background-clip:text; -webkit-text-fill-color:transparent; letter-spacing:-.5px; cursor:pointer; }
+body {
+font-family:‘DM Sans’,sans-serif;
+background:var(–bg); color:var(–text);
+min-height:100vh; overflow-x:hidden;
+}
+
+/* ═══ ANIMATED BG ═══ */
+.bg-canvas {
+position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;
+}
+.orb {
+position:absolute; border-radius:50%; filter:blur(80px); opacity:.22;
+animation:orbFloat linear infinite;
+}
+.orb1 { width:600px; height:600px; background:var(–accent);   top:-200px; left:-150px; animation-duration:18s; }
+.orb2 { width:500px; height:500px; background:var(–accent2);  bottom:-180px; right:-100px; animation-duration:24s; animation-delay:-8s; }
+.orb3 { width:350px; height:350px; background:var(–accent3);  top:40%; left:55%; animation-duration:20s; animation-delay:-14s; opacity:.12; }
+@keyframes orbFloat {
+0%   { transform:translate(0,0) scale(1); }
+33%  { transform:translate(40px,-60px) scale(1.05); }
+66%  { transform:translate(-30px,40px) scale(.95); }
+100% { transform:translate(0,0) scale(1); }
+}
+
+/* ═══ NAV ═══ */
+nav {
+position:sticky; top:0; z-index:100;
+display:flex; align-items:center; justify-content:space-between;
+padding:0 28px; height:64px;
+background:rgba(10,10,18,.82); backdrop-filter:blur(22px);
+border-bottom:1px solid var(–border);
+}
+.logo {
+font-family:‘Syne’,sans-serif; font-weight:800; font-size:1.35rem;
+background:linear-gradient(135deg,#6c63ff,#43e97b);
+-webkit-background-clip:text; -webkit-text-fill-color:transparent;
+letter-spacing:-.5px; cursor:pointer; user-select:none;
+}
 .nav-links { display:flex; gap:4px; }
-.nav-btn { background:none; border:none; color:var(–text-muted) !important; -webkit-text-fill-color:var(–text-muted) !important; font-family:‘DM Sans’,sans-serif; font-size:.88rem;
-padding:7px 14px; border-radius:10px; cursor:pointer; transition:all .2s; }
-.nav-btn:hover { background:var(–surface2); color:var(–text) !important; -webkit-text-fill-color:var(–text) !important; }
+.nav-btn {
+background:none; border:none; font-family:‘DM Sans’,sans-serif; font-size:.88rem;
+color:var(–muted); padding:7px 14px; border-radius:10px; cursor:pointer; transition:all .2s;
+}
+.nav-btn:hover { background:var(–surface2); color:var(–text); }
 .nav-btn.active { background:var(–accent); color:#fff !important; -webkit-text-fill-color:#fff !important; }
 .nav-right { display:flex; gap:8px; align-items:center; }
 
-/* BUTTONS */
-.btn-primary {
-background: var(–accent); color: #fff !important; -webkit-text-fill-color: #fff !important;
-border: none; font-family:‘DM Sans’,sans-serif; font-size:.9rem;
-font-weight:500; padding:9px 20px; border-radius:12px; cursor:pointer; transition:all .2s; white-space:nowrap;
+/* SAVE INDICATOR */
+.save-ind {
+display:flex; align-items:center; gap:6px; font-size:.75rem; color:var(–muted);
+padding:5px 10px; border-radius:8px; user-select:none; cursor:default; white-space:nowrap;
+transition:color .4s;
 }
-.btn-primary:hover { background:#5a52e0; transform:translateY(-1px); box-shadow:0 4px 20px rgba(108,99,255,.4); }
-.btn-outline {
-background: transparent; color: var(–text) !important; -webkit-text-fill-color: var(–text) !important;
-border: 1.5px solid var(–border); font-family:‘DM Sans’,sans-serif;
-font-size:.9rem; padding:9px 18px; border-radius:12px; cursor:pointer; transition:all .2s;
+.save-dot {
+width:7px; height:7px; border-radius:50%; background:var(–muted); flex-shrink:0;
+transition:background .4s, box-shadow .4s;
 }
-.btn-outline:hover { border-color:var(–accent); color:var(–accent) !important; -webkit-text-fill-color:var(–accent) !important; background:rgba(108,99,255,.07); }
+.save-ind.saved   { color:#43e97b !important; }
+.save-ind.saved   .save-dot { background:#43e97b; box-shadow:0 0 7px rgba(67,233,123,.7); }
+.save-ind.saving  { color:var(–gold) !important; }
+.save-ind.saving  .save-dot { background:var(–gold); animation:pulse .5s ease infinite alternate; }
+.save-ind.synced  { color:#a5a1ff !important; }
+.save-ind.synced  .save-dot { background:#a5a1ff; box-shadow:0 0 7px rgba(108,99,255,.7); }
+@keyframes pulse { from{box-shadow:0 0 2px rgba(251,191,36,.3)} to{box-shadow:0 0 10px rgba(251,191,36,.9)} }
 
-/* PAGES */
+/* ═══ BUTTONS ═══ */
+.btn {
+display:inline-flex; align-items:center; justify-content:center; gap:6px;
+font-family:‘DM Sans’,sans-serif; font-weight:500; border:none; cursor:pointer;
+border-radius:12px; transition:all .2s; white-space:nowrap;
+}
+.btn-sm  { font-size:.82rem; padding:7px 14px; border-radius:10px; }
+.btn-md  { font-size:.9rem;  padding:9px 20px; }
+.btn-lg  { font-size:.98rem; padding:12px 26px; }
+.btn-accent  { background:var(–accent);  color:#fff !important; -webkit-text-fill-color:#fff !important; }
+.btn-accent:hover  { background:#5a52e0; transform:translateY(-1px); box-shadow:0 4px 20px rgba(108,99,255,.4); }
+.btn-ghost  {
+background:transparent; color:var(–text) !important; -webkit-text-fill-color:var(–text) !important;
+border:1.5px solid var(–border);
+}
+.btn-ghost:hover { border-color:var(–accent); color:var(–accent) !important; -webkit-text-fill-color:var(–accent) !important; background:rgba(108,99,255,.07); }
+.btn-danger { background:rgba(255,101,132,.12); color:#ff9bb0 !important; -webkit-text-fill-color:#ff9bb0 !important; border:1px solid rgba(255,101,132,.25); }
+.btn-danger:hover { background:rgba(255,101,132,.25); }
+.back-btn {
+width:40px; height:40px; border-radius:12px; flex-shrink:0;
+background:var(–surface); border:1px solid var(–border); color:var(–text) !important;
+-webkit-text-fill-color:var(–text) !important;
+display:flex; align-items:center; justify-content:center; font-size:1.1rem; cursor:pointer; transition:all .2s;
+}
+.back-btn:hover { border-color:var(–accent); color:var(–accent) !important; -webkit-text-fill-color:var(–accent) !important; }
+
+/* ═══ PAGES ═══ */
 .app { position:relative; z-index:1; }
 .page { display:none; padding:32px; max-width:1100px; margin:0 auto; }
 .page.active { display:block; animation:fadeUp .35s ease; }
 @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
 
-/* HOME */
-.hero { text-align:center; padding:60px 0 44px; }
-.hero h1 { font-family:‘Syne’,sans-serif; font-size:clamp(2.2rem,5vw,3.8rem); font-weight:800; line-height:1.1; margin-bottom:18px;
-background:linear-gradient(135deg,#fff 0%,#a5a1ff 55%,#43e97b 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-.hero p { color:var(–text-muted); font-size:1.05rem; max-width:500px; margin:0 auto 32px; line-height:1.6; }
+/* ═══ HOME ═══ */
+.hero { text-align:center; padding:64px 0 48px; }
+.hero h1 {
+font-family:‘Syne’,sans-serif; font-size:clamp(2.2rem,5vw,3.8rem); font-weight:800; line-height:1.1; margin-bottom:18px;
+background:linear-gradient(135deg,#fff 0%,#a5a1ff 55%,#43e97b 100%);
+-webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.hero p { color:var(–muted); font-size:1.05rem; max-width:500px; margin:0 auto 32px; line-height:1.6; }
 .hero-actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
 
-/* IMPORT ZONE */
-.import-zone { border:2px dashed var(–border); border-radius:var(–radius); padding:22px; text-align:center;
-cursor:pointer; transition:all .2s; margin-bottom:30px; color:var(–text-muted); font-size:.9rem; }
-.import-zone:hover, .import-zone.drag-over { border-color:var(–accent); color:var(–accent); background:rgba(108,99,255,.05); }
+.import-zone {
+border:2px dashed var(–border); border-radius:var(–radius); padding:22px;
+text-align:center; cursor:pointer; transition:all .2s; margin-bottom:30px; color:var(–muted); font-size:.9rem;
+}
+.import-zone:hover,.import-zone.drag-over { border-color:var(–accent); color:var(–accent); background:rgba(108,99,255,.05); }
 .import-zone strong { display:block; font-size:.97rem; margin-bottom:4px; color:var(–text); }
 
-/* SETS */
-.section-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
-.section-title { font-family:‘Syne’,sans-serif; font-size:.95rem; font-weight:700; color:var(–text-muted); text-transform:uppercase; letter-spacing:1px; }
+.section-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
+.section-title { font-family:‘Syne’,sans-serif; font-size:.95rem; font-weight:700; color:var(–muted); text-transform:uppercase; letter-spacing:1px; }
 .sets-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:14px; margin-bottom:40px; }
-.set-card { background:var(–surface); border:1px solid var(–border); border-radius:var(–radius); padding:20px;
-transition:all .22s; position:relative; overflow:hidden; }
-.set-card::before { content:’’; position:absolute; top:0; left:0; right:0; height:3px;
-background:linear-gradient(90deg,var(–accent),var(–accent3)); opacity:0; transition:opacity .22s; }
+
+.set-card {
+background:var(–surface); border:1px solid var(–border); border-radius:var(–radius);
+padding:20px; transition:all .22s; position:relative; overflow:hidden;
+}
+.set-card::before {
+content:’’; position:absolute; top:0; left:0; right:0; height:3px;
+background:linear-gradient(90deg,var(–accent),var(–accent3)); opacity:0; transition:opacity .22s;
+}
 .set-card:hover { border-color:var(–accent); transform:translateY(-3px); box-shadow:0 8px 28px rgba(108,99,255,.18); }
 .set-card:hover::before { opacity:1; }
+.set-card.merging { border-color:var(–gold) !important; box-shadow:0 0 0 2px rgba(251,191,36,.3) !important; }
 .set-card-title { font-family:‘Syne’,sans-serif; font-weight:700; font-size:1rem; margin-bottom:6px; }
-.set-card-meta { color:var(–text-muted); font-size:.82rem; display:flex; gap:10px; align-items:center; margin-bottom:14px; }
-.set-card-count { background:var(–surface2); padding:2px 9px; border-radius:20px; font-size:.78rem; }
-.set-card-actions { display:flex; gap:6px; flex-wrap:wrap; }
-.tag-btn { font-size:.78rem; padding:5px 11px; border-radius:8px; border:none; cursor:pointer;
-font-family:‘DM Sans’,sans-serif; font-weight:500; transition:all .18s; -webkit-text-fill-color:currentColor; }
-.tag-flash  { background:rgba(108,99,255,.2);  color:#a5a1ff !important; -webkit-text-fill-color:#a5a1ff !important; }  .tag-flash:hover  { background:rgba(108,99,255,.35); }
-.tag-test   { background:rgba(255,101,132,.2); color:#ff9bb0 !important; -webkit-text-fill-color:#ff9bb0 !important; }  .tag-test:hover   { background:rgba(255,101,132,.35); }
-.tag-write  { background:rgba(251,191,36,.15); color:#fbbf24 !important; -webkit-text-fill-color:#fbbf24 !important; }  .tag-write:hover  { background:rgba(251,191,36,.28); }
-.tag-edit   { background:rgba(67,233,123,.15); color:#43e97b !important; -webkit-text-fill-color:#43e97b !important; }  .tag-edit:hover   { background:rgba(67,233,123,.28); }
-.tag-del    { background:rgba(255,101,132,.1); color:#ff9bb0 !important; -webkit-text-fill-color:#ff9bb0 !important; }  .tag-del:hover    { background:rgba(255,101,132,.25); }
-.tag-export { background:rgba(108,99,255,.12); color:#a5a1ff !important; -webkit-text-fill-color:#a5a1ff !important; }  .tag-export:hover { background:rgba(108,99,255,.28); }
+.set-card-meta { color:var(–muted); font-size:.82rem; display:flex; gap:10px; align-items:center; margin-bottom:14px; }
+.badge { background:var(–surface2); padding:2px 9px; border-radius:20px; font-size:.78rem; color:var(–muted); }
+.set-card-actions { display:flex; gap:5px; flex-wrap:wrap; }
 
-/* CREATE */
+/* tag buttons */
+.tag { font-size:.75rem; padding:5px 10px; border-radius:8px; border:none; cursor:pointer; font-family:‘DM Sans’,sans-serif; font-weight:500; transition:all .18s; }
+.tag-flash  { background:rgba(108,99,255,.18); color:#a5a1ff !important; -webkit-text-fill-color:#a5a1ff !important; }
+.tag-flash:hover  { background:rgba(108,99,255,.32); }
+.tag-test   { background:rgba(255,101,132,.18); color:#ffb3c1 !important; -webkit-text-fill-color:#ffb3c1 !important; }
+.tag-test:hover   { background:rgba(255,101,132,.32); }
+.tag-write  { background:rgba(251,191,36,.14); color:#fcd34d !important; -webkit-text-fill-color:#fcd34d !important; }
+.tag-write:hover  { background:rgba(251,191,36,.28); }
+.tag-merge  { background:rgba(251,191,36,.1);  color:#fbbf24 !important; -webkit-text-fill-color:#fbbf24 !important; border:1px dashed rgba(251,191,36,.4); }
+.tag-merge:hover  { background:rgba(251,191,36,.22); }
+.tag-merge.merging-active { background:rgba(251,191,36,.25); box-shadow:0 0 0 2px rgba(251,191,36,.5); }
+.tag-edit   { background:rgba(67,233,123,.12); color:#6ee7b7 !important; -webkit-text-fill-color:#6ee7b7 !important; }
+.tag-edit:hover   { background:rgba(67,233,123,.25); }
+.tag-export { background:rgba(108,99,255,.1);  color:#a5a1ff !important; -webkit-text-fill-color:#a5a1ff !important; }
+.tag-export:hover { background:rgba(108,99,255,.25); }
+.tag-del    { background:rgba(255,101,132,.08); color:#fca5a5 !important; -webkit-text-fill-color:#fca5a5 !important; }
+.tag-del:hover    { background:rgba(255,101,132,.22); }
+
+/* MERGE BAR */
+.merge-bar {
+position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(80px);
+background:var(–surface); border:1.5px solid var(–gold); border-radius:50px;
+padding:12px 22px; display:flex; align-items:center; gap:14px;
+box-shadow:0 8px 30px rgba(0,0,0,.5); z-index:200;
+transition:transform .35s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+opacity:0; pointer-events:none; white-space:nowrap;
+}
+.merge-bar.show { transform:translateX(-50%) translateY(0); opacity:1; pointer-events:all; }
+.merge-bar-label { font-size:.9rem; color:var(–gold) !important; -webkit-text-fill-color:var(–gold) !important; font-weight:500; }
+
+/* ═══ CREATE ═══ */
 .create-header { display:flex; align-items:center; gap:14px; margin-bottom:22px; }
 .create-header h2 { font-family:‘Syne’,sans-serif; font-size:1.7rem; font-weight:800; }
-.input-field { width:100%; background:var(–surface); border:1.5px solid var(–border); border-radius:12px; color:var(–text);
-font-family:‘DM Sans’,sans-serif; font-size:1rem; padding:11px 15px; outline:none; transition:border-color .2s; }
+.input-field {
+width:100%; background:var(–surface); border:1.5px solid var(–border);
+border-radius:12px; color:var(–text); font-family:‘DM Sans’,sans-serif;
+font-size:1rem; padding:11px 15px; outline:none; transition:border-color .2s;
+}
 .input-field:focus { border-color:var(–accent); }
-.input-field::placeholder { color:var(–text-muted); }
+.input-field::placeholder { color:var(–muted); }
 .cards-list { display:flex; flex-direction:column; gap:10px; margin:20px 0; }
-.card-row { display:grid; grid-template-columns:1fr 1fr auto; gap:10px; align-items:center;
-background:var(–surface); border:1.5px solid var(–border); border-radius:14px; padding:14px; transition:border-color .2s; }
+.card-row {
+display:grid; grid-template-columns:1fr 1fr auto; gap:10px; align-items:center;
+background:var(–surface); border:1.5px solid var(–border); border-radius:14px; padding:14px; transition:border-color .2s;
+}
 .card-row:hover { border-color:rgba(108,99,255,.3); }
 .card-row-header { display:flex; align-items:center; justify-content:space-between; grid-column:1/-1; margin-bottom:-2px; }
-.card-num { color:var(–text-muted); font-size:.78rem; font-weight:600; }
-.card-input { background:var(–surface2); border:1.5px solid transparent; border-radius:10px; color:var(–text);
-font-family:‘DM Sans’,sans-serif; font-size:.92rem; padding:9px 13px; outline:none; width:100%; transition:border-color .2s; }
+.card-num { color:var(–muted); font-size:.78rem; font-weight:600; }
+.card-input {
+background:var(–surface2); border:1.5px solid transparent; border-radius:10px; color:var(–text);
+font-family:‘DM Sans’,sans-serif; font-size:.92rem; padding:9px 13px; outline:none; width:100%; transition:border-color .2s;
+}
 .card-input:focus { border-color:var(–accent); }
-.card-input::placeholder { color:var(–text-muted); }
-.delete-btn { background:rgba(255,101,132,.1); border:none; color:#ff6584; width:34px; height:34px; border-radius:9px;
-cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1rem; transition:all .2s; flex-shrink:0; }
+.card-input::placeholder { color:var(–muted); }
+.delete-btn {
+width:34px; height:34px; border-radius:9px; border:none; cursor:pointer;
+background:rgba(255,101,132,.1); color:#ff9bb0 !important; -webkit-text-fill-color:#ff9bb0 !important;
+display:flex; align-items:center; justify-content:center; font-size:1rem; transition:all .2s; flex-shrink:0;
+}
 .delete-btn:hover { background:rgba(255,101,132,.25); }
-.add-card-btn { width:100%; padding:13px; border-radius:14px; border:2px dashed var(–border); background:transparent;
-color:var(–text-muted); font-family:‘DM Sans’,sans-serif; font-size:.92rem; cursor:pointer; transition:all .2s; }
-.add-card-btn:hover { border-color:var(–accent); color:var(–accent); background:rgba(108,99,255,.04); }
+.add-card-btn {
+width:100%; padding:13px; border-radius:14px; border:2px dashed var(–border);
+background:transparent; color:var(–muted) !important; -webkit-text-fill-color:var(–muted) !important;
+font-family:‘DM Sans’,sans-serif; font-size:.92rem; cursor:pointer; transition:all .2s;
+}
+.add-card-btn:hover { border-color:var(–accent); color:var(–accent) !important; -webkit-text-fill-color:var(–accent) !important; }
 
 /* AUTOCOMPLETE */
 .input-wrap { position:relative; width:100%; }
-.ghost-text { position:absolute; inset:0; padding:9px 13px; font-family:‘DM Sans’,sans-serif; font-size:.92rem;
-color:transparent; pointer-events:none; white-space:pre; overflow:hidden; border-radius:10px; }
+.ghost-text { position:absolute; inset:0; padding:9px 13px; font-family:‘DM Sans’,sans-serif; font-size:.92rem; color:transparent; pointer-events:none; white-space:pre; overflow:hidden; border-radius:10px; }
 .ghost-real { color:transparent; }
-.ghost-suggest { color:var(–text-muted); opacity:.5; }
-.tab-hint { position:absolute; right:8px; top:50%; transform:translateY(-50%); background:var(–surface);
-border:1px solid var(–border); color:var(–text-muted); font-size:.65rem; padding:2px 6px; border-radius:5px;
-pointer-events:none; opacity:0; transition:opacity .15s; letter-spacing:.4px; white-space:nowrap; }
+.ghost-suggest { color:var(–muted); opacity:.5; }
+.tab-hint { position:absolute; right:8px; top:50%; transform:translateY(-50%); background:var(–surface); border:1px solid var(–border); color:var(–muted) !important; -webkit-text-fill-color:var(–muted) !important; font-size:.62rem; padding:2px 6px; border-radius:5px; pointer-events:none; opacity:0; transition:opacity .15s; white-space:nowrap; }
 .input-wrap:focus-within .tab-hint.visible { opacity:1; }
 
 /* LANG */
 .lang-badges { display:flex; gap:5px; align-items:center; flex-wrap:wrap; }
-.lang-badge { display:inline-flex; align-items:center; gap:3px; font-size:.7rem; padding:2px 7px; border-radius:20px;
-background:var(–surface2); color:var(–text-muted); border:1px solid var(–border); font-weight:500;
-transition:all .3s; opacity:0; transform:scale(.85); }
+.lang-badge { display:inline-flex; align-items:center; gap:3px; font-size:.7rem; padding:2px 7px; border-radius:20px; background:var(–surface2); color:var(–muted) !important; -webkit-text-fill-color:var(–muted) !important; border:1px solid var(–border); font-weight:500; transition:all .3s; opacity:0; transform:scale(.85); }
 .lang-badge.show { opacity:1; transform:scale(1); }
 
-/* STUDY COMMON */
+/* ═══ STUDY COMMON ═══ */
 .study-header { display:flex; align-items:center; gap:14px; margin-bottom:26px; }
-.back-btn { background:var(–surface); border:1px solid var(–border); color:var(–text); width:40px; height:40px;
-border-radius:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.1rem;
-transition:all .2s; flex-shrink:0; }
-.back-btn:hover { border-color:var(–accent); color:var(–accent); }
-.study-mode-label { font-size:.72rem; color:var(–text-muted); margin-bottom:2px; text-transform:uppercase; letter-spacing:1px; }
+.study-mode-label { font-size:.72rem; color:var(–muted); margin-bottom:2px; text-transform:uppercase; letter-spacing:1px; }
 .study-title { font-family:‘Syne’,sans-serif; font-size:1.3rem; font-weight:700; }
 .progress-bar-wrap { background:var(–surface2); border-radius:99px; height:5px; margin-bottom:26px; overflow:hidden; }
 .progress-bar { height:100%; border-radius:99px; background:linear-gradient(90deg,var(–accent),var(–accent3)); transition:width .4s ease; }
 
-/* FLASHCARD */
+/* ═══ FLASHCARD ═══ */
 .flashcard-area { perspective:1200px; max-width:680px; margin:0 auto 26px; }
 .flashcard-wrap { position:relative; height:310px; cursor:pointer; }
-.flashcard-inner { position:absolute; inset:0; transform-style:preserve-3d; transition:transform var(–card-flip) cubic-bezier(.4,0,.2,1); border-radius:22px; }
+.flashcard-inner { position:absolute; inset:0; transform-style:preserve-3d; transition:transform .6s cubic-bezier(.4,0,.2,1); border-radius:22px; }
 .flashcard-inner.flipped { transform:rotateY(180deg); }
-.card-face { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
-backface-visibility:hidden; border-radius:22px; padding:32px; text-align:center; }
+.card-face { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; backface-visibility:hidden; border-radius:22px; padding:32px; text-align:center; }
 .card-front { background:var(–surface); border:1.5px solid var(–border); box-shadow:0 18px 50px rgba(0,0,0,.4); }
-.card-back  { background:linear-gradient(135deg,#1e1b4b,#1c2b1a); border:1.5px solid rgba(108,99,255,.4); transform:rotateY(180deg); box-shadow:0 18px 50px rgba(108,99,255,.2); }
-.card-label { font-size:.72rem; text-transform:uppercase; letter-spacing:2px; color:var(–text-muted); margin-bottom:16px; font-weight:600; }
+.card-back  { background:linear-gradient(135deg,#1e1b4b,#1c2b1a); border:1.5px solid rgba(108,99,255,.4); transform:rotateY(180deg); }
+.card-label { font-size:.72rem; text-transform:uppercase; letter-spacing:2px; color:var(–muted); margin-bottom:16px; font-weight:600; }
 .card-text  { font-family:‘Syne’,sans-serif; font-size:clamp(1.3rem,4vw,1.9rem); font-weight:700; line-height:1.3; }
-.card-back .card-text { color:#a5ffd4; }
-.card-hint  { margin-top:12px; color:var(–text-muted); font-size:.82rem; }
+.card-back .card-text { color:#a5ffd4 !important; -webkit-text-fill-color:#a5ffd4 !important; }
+.card-hint  { margin-top:12px; color:var(–muted); font-size:.82rem; }
 .flashcard-controls { display:flex; align-items:center; justify-content:center; gap:14px; }
-.ctrl-btn { background:var(–surface); border:1.5px solid var(–border); color:var(–text); width:50px; height:50px;
-border-radius:15px; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center; transition:all .2s; }
-.ctrl-btn:hover:not(:disabled) { border-color:var(–accent); color:var(–accent); transform:scale(1.06); }
+.ctrl-btn {
+background:var(–surface); border:1.5px solid var(–border); color:var(–text) !important; -webkit-text-fill-color:var(–text) !important;
+width:50px; height:50px; border-radius:15px; cursor:pointer; font-size:1.2rem;
+display:flex; align-items:center; justify-content:center; transition:all .2s;
+}
+.ctrl-btn:hover:not(:disabled) { border-color:var(–accent); color:var(–accent) !important; -webkit-text-fill-color:var(–accent) !important; transform:scale(1.06); }
 .ctrl-btn:disabled { opacity:.28; cursor:not-allowed; }
-.ctrl-btn.c-correct { background:rgba(67,233,123,.14); border-color:rgba(67,233,123,.4); color:#43e97b; }
-.ctrl-btn.c-correct:hover { background:rgba(67,233,123,.28); }
-.ctrl-btn.c-wrong   { background:rgba(255,101,132,.14); border-color:rgba(255,101,132,.4); color:#ff6584; }
-.ctrl-btn.c-wrong:hover   { background:rgba(255,101,132,.28); }
-.card-counter { font-size:.88rem; color:var(–text-muted); font-weight:500; min-width:56px; text-align:center; }
+.ctrl-btn.c-ok  { background:rgba(67,233,123,.14); border-color:rgba(67,233,123,.4);  color:#43e97b !important; -webkit-text-fill-color:#43e97b !important; }
+.ctrl-btn.c-ko  { background:rgba(255,101,132,.14); border-color:rgba(255,101,132,.4); color:#ff6584 !important; -webkit-text-fill-color:#ff6584 !important; }
+.card-counter { font-size:.88rem; color:var(–muted); font-weight:500; min-width:56px; text-align:center; }
 
-/* QCM */
+/* ═══ QCM ═══ */
 .test-question { font-family:‘Syne’,sans-serif; font-size:1.2rem; font-weight:700; margin-bottom:20px; }
 .test-options { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-.option-btn { background:var(–surface); border:2px solid var(–border); color:var(–text); font-family:‘DM Sans’,sans-serif;
-font-size:.95rem; padding:16px 18px; border-radius:13px; cursor:pointer; text-align:left; transition:all .2s; line-height:1.4; }
+.option-btn {
+background:var(–surface); border:2px solid var(–border); color:var(–text) !important; -webkit-text-fill-color:var(–text) !important;
+font-family:‘DM Sans’,sans-serif; font-size:.95rem; padding:16px 18px; border-radius:13px; cursor:pointer; text-align:left; transition:all .2s; line-height:1.4;
+}
 .option-btn:hover:not(:disabled) { border-color:var(–accent); background:rgba(108,99,255,.07); }
-.option-btn.correct { border-color:var(–accent3); background:rgba(67,233,123,.12); color:#43e97b; }
-.option-btn.wrong   { border-color:var(–accent2); background:rgba(255,101,132,.12); color:#ff9bb0; }
+.option-btn.correct { border-color:var(–accent3); background:rgba(67,233,123,.12); color:#43e97b !important; -webkit-text-fill-color:#43e97b !important; }
+.option-btn.wrong   { border-color:var(–accent2); background:rgba(255,101,132,.12); color:#ff9bb0 !important; -webkit-text-fill-color:#ff9bb0 !important; }
 .option-btn:disabled { cursor:not-allowed; }
 
-/* WRITE MODE */
-.write-card { background:var(–surface); border:1.5px solid var(–border); border-radius:22px; padding:32px;
-max-width:680px; margin:0 auto 22px; box-shadow:0 18px 50px rgba(0,0,0,.35); }
-.write-prompt-label { font-size:.72rem; text-transform:uppercase; letter-spacing:2px; color:var(–text-muted); margin-bottom:10px; font-weight:600; }
+/* ═══ WRITE ═══ */
+.write-card { background:var(–surface); border:1.5px solid var(–border); border-radius:22px; padding:32px; max-width:680px; margin:0 auto 22px; box-shadow:0 18px 50px rgba(0,0,0,.35); }
+.write-prompt-label { font-size:.72rem; text-transform:uppercase; letter-spacing:2px; color:var(–muted); margin-bottom:10px; font-weight:600; }
 .write-prompt { font-family:‘Syne’,sans-serif; font-size:clamp(1.2rem,3.5vw,1.65rem); font-weight:700; margin-bottom:24px; line-height:1.3; }
-.write-answer-input { width:100%; background:var(–surface2); border:2px solid var(–border); border-radius:13px; color:var(–text);
-font-family:‘DM Sans’,sans-serif; font-size:1.02rem; padding:13px 16px; outline:none; transition:border-color .25s;
-resize:none; min-height:56px; }
+.write-answer-input {
+width:100%; background:var(–surface2); border:2px solid var(–border); border-radius:13px; color:var(–text);
+font-family:‘DM Sans’,sans-serif; font-size:1.02rem; padding:13px 16px; outline:none;
+transition:border-color .25s; resize:none; min-height:56px;
+}
 .write-answer-input:focus { border-color:var(–accent); }
-.write-answer-input::placeholder { color:var(–text-muted); }
-.write-answer-input.state-correct { border-color:var(–accent3); background:rgba(67,233,123,.06); }
-.write-answer-input.state-wrong   { border-color:var(–accent2); background:rgba(255,101,132,.06); }
-.write-answer-input.state-almost  { border-color:#fbbf24;        background:rgba(251,191,36,.06); }
+.write-answer-input::placeholder { color:var(–muted); }
+.write-answer-input.s-ok     { border-color:var(–accent3); background:rgba(67,233,123,.06); }
+.write-answer-input.s-almost { border-color:var(–gold);    background:rgba(251,191,36,.06); }
+.write-answer-input.s-ko     { border-color:var(–accent2); background:rgba(255,101,132,.06); }
 .write-actions { display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; align-items:center; }
 .write-feedback { margin-top:14px; padding:13px 16px; border-radius:12px; font-size:.93rem; font-weight:500; display:none; line-height:1.5; }
 .write-feedback.show { display:block; animation:fadeUp .22s; }
-.write-feedback.good   { background:rgba(67,233,123,.12); color:#43e97b; border:1px solid rgba(67,233,123,.25); }
-.write-feedback.almost { background:rgba(251,191,36,.12);  color:#fbbf24; border:1px solid rgba(251,191,36,.25); }
-.write-feedback.bad    { background:rgba(255,101,132,.12); color:#ff9bb0; border:1px solid rgba(255,101,132,.25); }
-.write-skip-btn { background:none; border:none; color:var(–text-muted); font-family:‘DM Sans’,sans-serif; font-size:.85rem;
-cursor:pointer; padding:4px 8px; border-radius:8px; transition:all .2s; margin-left:auto; }
-.write-skip-btn:hover { color:var(–text); background:var(–surface2); }
-.write-streak { display:flex; align-items:center; gap:6px; }
+.wf-good   { background:rgba(67,233,123,.12); color:#43e97b !important; -webkit-text-fill-color:#43e97b !important; border:1px solid rgba(67,233,123,.25); }
+.wf-almost { background:rgba(251,191,36,.12);  color:#fcd34d !important; -webkit-text-fill-color:#fcd34d !important; border:1px solid rgba(251,191,36,.25); }
+.wf-bad    { background:rgba(255,101,132,.12); color:#ff9bb0 !important; -webkit-text-fill-color:#ff9bb0 !important; border:1px solid rgba(255,101,132,.25); }
+.write-skip-btn {
+background:none; border:none; color:var(–muted) !important; -webkit-text-fill-color:var(–muted) !important;
+font-family:‘DM Sans’,sans-serif; font-size:.85rem; cursor:pointer; padding:4px 8px; border-radius:8px; transition:all .2s; margin-left:auto;
+}
+.write-skip-btn:hover { color:var(–text) !important; -webkit-text-fill-color:var(–text) !important; background:var(–surface2); }
+.write-streak { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
 .streak-dot { width:9px; height:9px; border-radius:50%; background:var(–border); transition:background .3s; flex-shrink:0; }
-.streak-dot.ok   { background:var(–accent3); }
-.streak-dot.ko   { background:var(–accent2); }
-.streak-dot.skip { background:#fbbf24; }
+.streak-dot.ok   { background:var(–accent3); } .streak-dot.ko { background:var(–accent2); } .streak-dot.sk { background:var(–gold); }
 
-/* FEEDBACK shared */
-.test-feedback { margin-top:16px; padding:12px 16px; border-radius:12px; font-weight:500; display:none; }
-.test-feedback.show { display:block; animation:fadeUp .22s; }
-.test-feedback.good { background:rgba(67,233,123,.14); color:#43e97b; border:1px solid rgba(67,233,123,.28); }
-.test-feedback.bad  { background:rgba(255,101,132,.14); color:#ff9bb0; border:1px solid rgba(255,101,132,.28); }
+/* SHARED FEEDBACK */
+.feedback { margin-top:16px; padding:12px 16px; border-radius:12px; font-weight:500; display:none; }
+.feedback.show { display:block; animation:fadeUp .22s; }
+.fb-good { background:rgba(67,233,123,.14); color:#43e97b !important; -webkit-text-fill-color:#43e97b !important; border:1px solid rgba(67,233,123,.28); }
+.fb-bad  { background:rgba(255,101,132,.14); color:#ff9bb0 !important; -webkit-text-fill-color:#ff9bb0 !important; border:1px solid rgba(255,101,132,.28); }
 
-/* RESULTS */
+/* ═══ RESULTS ═══ */
 .results-wrap { text-align:center; max-width:520px; margin:0 auto; padding:42px 0; }
-.results-score { font-family:‘Syne’,sans-serif; font-size:4.5rem; font-weight:800; background:linear-gradient(135deg,#6c63ff,#43e97b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-.results-label { font-size:1.05rem; color:var(–text-muted); margin-bottom:26px; }
+.results-score {
+font-family:‘Syne’,sans-serif; font-size:5rem; font-weight:800;
+background:linear-gradient(135deg,#6c63ff,#43e97b);
+-webkit-background-clip:text; -webkit-text-fill-color:transparent;
+animation:scoreReveal .8s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes scoreReveal { from{opacity:0;transform:scale(.6)} to{opacity:1;transform:scale(1)} }
+.results-label { font-size:1.05rem; color:var(–muted); margin-bottom:26px; }
 .results-detail { display:flex; gap:16px; justify-content:center; margin-bottom:28px; flex-wrap:wrap; }
-.res-item { background:var(–surface); border:1px solid var(–border); border-radius:12px; padding:13px 22px; }
+.res-item { background:var(–surface); border:1px solid var(–border); border-radius:12px; padding:13px 22px; animation:fadeUp .5s ease both; }
+.res-item:nth-child(2) { animation-delay:.1s; } .res-item:nth-child(3) { animation-delay:.2s; }
 .res-num { font-family:‘Syne’,sans-serif; font-size:1.45rem; font-weight:700; }
-.res-num.green  { color:#43e97b; } .res-num.red { color:#ff6584; } .res-num.yellow { color:#fbbf24; }
-.res-label { font-size:.76rem; color:var(–text-muted); margin-top:3px; }
+.cn-green  { color:#43e97b !important; -webkit-text-fill-color:#43e97b !important; }
+.cn-red    { color:#ff6584 !important; -webkit-text-fill-color:#ff6584 !important; }
+.cn-yellow { color:var(–gold) !important; -webkit-text-fill-color:var(–gold) !important; }
+.res-label { font-size:.76rem; color:var(–muted); margin-top:3px; }
 .results-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
 
-.empty { text-align:center; padding:56px 24px; color:var(–text-muted); }
+/* ═══ CONFETTI CANVAS ═══ */
+#confetti-canvas { position:fixed; inset:0; pointer-events:none; z-index:500; }
+
+/* ═══ MISC ═══ */
+.empty { text-align:center; padding:56px 24px; color:var(–muted); }
 .empty-icon { font-size:3rem; margin-bottom:12px; }
 .empty h3 { font-family:‘Syne’,sans-serif; font-size:1.2rem; color:var(–text); margin-bottom:6px; }
-
-#toast { position:fixed; bottom:22px; left:50%; transform:translateX(-50%); background:var(–surface2);
-border:1px solid var(–border); color:var(–text); padding:11px 22px; border-radius:50px; font-size:.88rem;
-box-shadow:0 8px 28px rgba(0,0,0,.4); z-index:9999; opacity:0; transition:opacity .28s; pointer-events:none; white-space:nowrap; }
+#toast {
+position:fixed; bottom:22px; left:50%; transform:translateX(-50%);
+background:var(–surface2); border:1px solid var(–border); color:var(–text) !important; -webkit-text-fill-color:var(–text) !important;
+padding:11px 22px; border-radius:50px; font-size:.88rem;
+box-shadow:0 8px 28px rgba(0,0,0,.4); z-index:9999; opacity:0; transition:opacity .28s; pointer-events:none; white-space:nowrap;
+}
 #toast.show { opacity:1; }
 
-@media(max-width:600px){
+@media(max-width:700px){
 .page{padding:18px;}
 .test-options{grid-template-columns:1fr;}
 nav{padding:0 14px;}
 .nav-links{display:none;}
 .write-actions{flex-direction:column;}
-.nav-right .btn-outline{display:none;}
+.nav-right .btn-ghost,.save-ind .slabel{display:none;}
+.merge-bar{font-size:.82rem;padding:10px 16px;}
 }
 </style>
 
 </head>
 <body>
+
+<!-- Animated background -->
+
+<div class="bg-canvas">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+
+<canvas id="confetti-canvas"></canvas>
 
 <nav>
   <div class="logo" onclick="showPage('home')">⚡ FlashLearn</div>
@@ -247,11 +374,23 @@ nav{padding:0 14px;}
     <button class="nav-btn" onclick="showPage('create')">Créer</button>
   </div>
   <div class="nav-right">
-    <button class="btn-outline" style="font-size:.85rem;padding:8px 14px" onclick="triggerImport()">⬆ Importer JSON</button>
-    <button class="btn-primary" onclick="showPage('create')">+ Nouveau set</button>
+    <div class="save-ind" id="save-ind" title="Sauvegarde automatique dans le navigateur">
+      <div class="save-dot"></div>
+      <span class="slabel" id="save-label">…</span>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="triggerImport()">⬆ Importer</button>
+    <button class="btn btn-accent btn-md" onclick="showPage('create')">+ Nouveau set</button>
   </div>
 </nav>
 <input type="file" id="import-file" accept=".json" style="display:none" onchange="handleImportFile(event)">
+
+<!-- MERGE BAR -->
+
+<div class="merge-bar" id="merge-bar">
+  <span class="merge-bar-label" id="merge-label">🔀 0 set sélectionné</span>
+  <button class="btn btn-accent btn-sm" onclick="doMerge()">Fusionner</button>
+  <button class="btn btn-ghost btn-sm" onclick="cancelMerge()">Annuler</button>
+</div>
 
 <div class="app">
 
@@ -262,21 +401,18 @@ nav{padding:0 14px;}
       <h1>Apprends n'importe quoi,<br>gratuitement.</h1>
       <p>Flashcards, QCM, questions écrites — sans abonnement, sans limite. Tes données t'appartiennent.</p>
       <div class="hero-actions">
-        <button class="btn-primary" style="padding:12px 26px;font-size:.98rem" onclick="showPage('create')">Créer un set</button>
-        <button class="btn-outline" onclick="loadDemo()">Voir un exemple</button>
+        <button class="btn btn-accent btn-lg" onclick="showPage('create')">Créer un set</button>
+        <button class="btn btn-ghost btn-lg" onclick="loadDemo()">Voir un exemple</button>
       </div>
     </div>
     <div class="import-zone" id="drop-zone"
       ondragover="event.preventDefault();this.classList.add('drag-over')"
       ondragleave="this.classList.remove('drag-over')"
-      ondrop="handleDrop(event)"
-      onclick="triggerImport()">
+      ondrop="handleDrop(event)" onclick="triggerImport()">
       <strong>📂 Importer un set depuis un fichier JSON</strong>
       Glisser-déposer ou cliquer pour parcourir
     </div>
-    <div id="sets-container">
-      <div class="empty"><div class="empty-icon">📚</div><h3>Aucun set pour l'instant</h3><p>Crée ton premier set ou importe un fichier JSON.</p></div>
-    </div>
+    <div id="sets-container"></div>
   </div>
 
   <!-- CREATE -->
@@ -286,14 +422,14 @@ nav{padding:0 14px;}
       <button class="back-btn" onclick="cancelCreate()">←</button>
       <h2 id="create-title">Nouveau set</h2>
     </div>
-    <input type="text" class="input-field" id="set-title" placeholder="Titre du set (ex: Vocabulaire espagnol)" style="margin-bottom:10px">
+    <input type="text" class="input-field" id="set-title" placeholder="Titre du set" style="margin-bottom:10px">
     <input type="text" class="input-field" id="set-desc" placeholder="Description (optionnel)">
     <div class="cards-list" id="cards-list"></div>
     <button class="add-card-btn" onclick="addCard()">+ Ajouter une carte</button>
     <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap">
-      <button class="btn-primary" onclick="saveSet()">💾 Sauvegarder</button>
-      <button class="btn-outline" onclick="exportCurrentDraft()">⬇ Exporter brouillon JSON</button>
-      <button class="btn-outline" onclick="cancelCreate()">Annuler</button>
+      <button class="btn btn-accent btn-md" onclick="saveSet()">💾 Sauvegarder</button>
+      <button class="btn btn-ghost btn-md" onclick="exportCurrentDraft()">⬇ Exporter brouillon</button>
+      <button class="btn btn-ghost btn-md" onclick="cancelCreate()">Annuler</button>
     </div>
   </div>
 
@@ -321,23 +457,23 @@ nav{padding:0 14px;}
       </div>
     </div>
     <div class="flashcard-controls">
-      <button class="ctrl-btn c-wrong" title="Je ne savais pas" onclick="markCard(false)">✗</button>
+      <button class="ctrl-btn c-ko" onclick="markCard(false)">✗</button>
       <button class="ctrl-btn" onclick="prevCard()" id="prev-btn">←</button>
       <div class="card-counter" id="card-counter">1 / 1</div>
       <button class="ctrl-btn" onclick="nextCard()" id="next-btn">→</button>
-      <button class="ctrl-btn c-correct" title="Je savais" onclick="markCard(true)">✓</button>
+      <button class="ctrl-btn c-ok" onclick="markCard(true)">✓</button>
     </div>
-    <div id="flash-results" style="display:none;text-align:center;margin-top:20px">
+    <div id="flash-results" style="display:none;margin-top:20px">
       <div class="results-wrap">
         <div class="results-score" id="flash-score">0%</div>
         <div class="results-label">de réponses correctes</div>
         <div class="results-detail">
-          <div class="res-item"><div class="res-num green" id="flash-correct">0</div><div class="res-label">Correctes</div></div>
-          <div class="res-item"><div class="res-num red" id="flash-wrong">0</div><div class="res-label">À revoir</div></div>
+          <div class="res-item"><div class="res-num cn-green" id="flash-correct">0</div><div class="res-label">Correctes</div></div>
+          <div class="res-item"><div class="res-num cn-red"   id="flash-wrong">0</div><div class="res-label">À revoir</div></div>
         </div>
         <div class="results-actions">
-          <button class="btn-primary" onclick="restartFlash()">Recommencer</button>
-          <button class="btn-outline" onclick="showPage('home')">Retour</button>
+          <button class="btn btn-accent btn-md" onclick="restartFlash()">Recommencer</button>
+          <button class="btn btn-ghost btn-md"  onclick="showPage('home')">Retour</button>
         </div>
       </div>
     </div>
@@ -354,20 +490,20 @@ nav{padding:0 14px;}
     <div id="test-content">
       <div class="test-question" id="test-question"></div>
       <div class="test-options" id="test-options"></div>
-      <div class="test-feedback" id="test-feedback"></div>
-      <button class="btn-primary" id="test-next-btn" style="margin-top:18px;display:none" onclick="nextQuestion()">Suivant →</button>
+      <div class="feedback" id="test-feedback"></div>
+      <button class="btn btn-accent btn-md" id="test-next-btn" style="margin-top:18px;display:none" onclick="nextQ()">Suivant →</button>
     </div>
     <div id="test-results" style="display:none">
       <div class="results-wrap">
         <div class="results-score" id="test-score-num">0%</div>
         <div class="results-label">de bonnes réponses</div>
         <div class="results-detail">
-          <div class="res-item"><div class="res-num green" id="test-correct">0</div><div class="res-label">Correctes</div></div>
-          <div class="res-item"><div class="res-num red" id="test-wrong">0</div><div class="res-label">Incorrectes</div></div>
+          <div class="res-item"><div class="res-num cn-green" id="test-correct">0</div><div class="res-label">Correctes</div></div>
+          <div class="res-item"><div class="res-num cn-red"   id="test-wrong">0</div><div class="res-label">Incorrectes</div></div>
         </div>
         <div class="results-actions">
-          <button class="btn-primary" onclick="restartTest()">Refaire</button>
-          <button class="btn-outline" onclick="showPage('home')">Retour</button>
+          <button class="btn btn-accent btn-md" onclick="restartTest()">Refaire</button>
+          <button class="btn btn-ghost btn-md"  onclick="showPage('home')">Retour</button>
         </div>
       </div>
     </div>
@@ -381,636 +517,644 @@ nav{padding:0 14px;}
       <div><div class="study-mode-label">✍ QUESTIONS ÉCRITES</div><div class="study-title" id="write-set-name"></div></div>
     </div>
     <div class="progress-bar-wrap"><div class="progress-bar" id="write-progress" style="width:0%"></div></div>
-
-```
-<div id="write-content">
-  <div class="write-card">
-    <div class="write-prompt-label">Quelle est la définition de :</div>
-    <div class="write-prompt" id="write-prompt"></div>
-    <textarea class="write-answer-input" id="write-input" placeholder="Tape ta réponse ici… (Entrée pour valider)" rows="2"
-      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();checkWriteAnswer();}"></textarea>
-    <div class="write-feedback" id="write-feedback"></div>
-    <div class="write-actions">
-      <button class="btn-primary" id="write-submit-btn" onclick="checkWriteAnswer()">Vérifier ↵</button>
-      <button class="btn-outline" id="write-next-btn" style="display:none" onclick="nextWriteQuestion()">Suivant →</button>
-      <button class="write-skip-btn" id="write-skip-btn" onclick="skipWriteQuestion()">Passer</button>
-      <div class="write-streak" id="write-streak"></div>
+    <div id="write-content">
+      <div class="write-card">
+        <div class="write-prompt-label">Quelle est la définition de :</div>
+        <div class="write-prompt" id="write-prompt"></div>
+        <textarea class="write-answer-input" id="write-input" placeholder="Tape ta réponse… (Entrée pour valider)" rows="2"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();checkWrite();}"></textarea>
+        <div class="write-feedback" id="write-feedback"></div>
+        <div class="write-actions">
+          <button class="btn btn-accent btn-md" id="write-submit-btn" onclick="checkWrite()">Vérifier ↵</button>
+          <button class="btn btn-ghost btn-md"  id="write-next-btn"   style="display:none" onclick="nextWrite()">Suivant →</button>
+          <button class="write-skip-btn" id="write-skip-btn" onclick="skipWrite()">Passer</button>
+          <div class="write-streak" id="write-streak"></div>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-
-<div id="write-results" style="display:none">
-  <div class="results-wrap">
-    <div class="results-score" id="write-score-num">0%</div>
-    <div class="results-label">de bonnes réponses</div>
-    <div class="results-detail">
-      <div class="res-item"><div class="res-num green"  id="write-correct">0</div><div class="res-label">Correctes</div></div>
-      <div class="res-item"><div class="res-num yellow" id="write-almost">0</div> <div class="res-label">Presque</div></div>
-      <div class="res-item"><div class="res-num red"    id="write-wrong">0</div>  <div class="res-label">Incorrectes</div></div>
+    <div id="write-results" style="display:none">
+      <div class="results-wrap">
+        <div class="results-score" id="write-score-num">0%</div>
+        <div class="results-label">de bonnes réponses</div>
+        <div class="results-detail">
+          <div class="res-item"><div class="res-num cn-green"  id="write-correct">0</div><div class="res-label">Correctes</div></div>
+          <div class="res-item"><div class="res-num cn-yellow" id="write-almost">0</div> <div class="res-label">Presque</div></div>
+          <div class="res-item"><div class="res-num cn-red"    id="write-wrong">0</div>  <div class="res-label">Incorrectes</div></div>
+        </div>
+        <div class="results-actions">
+          <button class="btn btn-accent btn-md" onclick="restartWrite()">Recommencer</button>
+          <button class="btn btn-ghost btn-md"  id="write-retry-btn" onclick="retryWrong()">Retravailler les erreurs</button>
+          <button class="btn btn-ghost btn-md"  onclick="showPage('home')">Retour</button>
+        </div>
+      </div>
     </div>
-    <div class="results-actions">
-      <button class="btn-primary" onclick="restartWrite()">Recommencer</button>
-      <button class="btn-outline" id="write-retry-btn" onclick="retryWrongWrite()">Retravailler les erreurs</button>
-      <button class="btn-outline" onclick="showPage('home')">Retour</button>
-    </div>
-  </div>
-</div>
-```
-
   </div>
 
 </div><!-- /app -->
 <div id="toast"></div>
 
 <script>
-// ═══════════════════════════════════
-//  DATA
-// ═══════════════════════════════════
-let sets = JSON.parse(localStorage.getItem('flashlearn_sets') || '[]');
-let editingSetId = null;
-function saveSets() { localStorage.setItem('flashlearn_sets', JSON.stringify(sets)); }
+// ═══════════════════════════════════════════
+//  BROADCAST CHANNEL
+// ═══════════════════════════════════════════
+var bc = null;
+try { bc = new BroadcastChannel('flashlearn_sync'); } catch(e){}
+if (bc) bc.onmessage = function(e){
+  if (!e.data || e.data.type !== 'sets_updated') return;
+  sets = e.data.sets;
+  if (document.getElementById('page-home').classList.contains('active')) renderHome();
+  setSaveInd('synced', '🔄 Synchronisé');
+  showToast('🔄 Mis à jour depuis un autre onglet');
+  setTimeout(function(){ updateSaveInd(); }, 3000);
+};
 
-// ═══════════════════════════════════
-//  NAVIGATION
-// ═══════════════════════════════════
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + id).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  if (id === 'home')   { document.querySelectorAll('.nav-btn')[0].classList.add('active'); renderHome(); }
-  if (id === 'create') { document.querySelectorAll('.nav-btn')[1].classList.add('active'); initCreate(); }
+// ═══════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════
+var sets = JSON.parse(localStorage.getItem('flashlearn_sets') || '[]');
+var editingId = null;
+
+function saveSets() {
+  localStorage.setItem('flashlearn_sets', JSON.stringify(sets));
+  if (bc) { try { bc.postMessage({ type:'sets_updated', sets:sets }); } catch(e){} }
+  setSaveInd('saving', 'Sauvegarde…');
+  setTimeout(function(){
+    setSaveInd('saved', sets.length + ' set' + (sets.length>1?'s':'') + ' sauvegardé' + (sets.length>1?'s':''));
+    setTimeout(updateSaveInd, 2500);
+  }, 400);
 }
 
-// ═══════════════════════════════════
+function setSaveInd(cls, label) {
+  var el = document.getElementById('save-ind');
+  var lb = document.getElementById('save-label');
+  if (!el) return;
+  el.className = 'save-ind ' + cls;
+  lb.textContent = label;
+}
+
+function updateSaveInd() {
+  var n = sets.length;
+  if (!n) { setSaveInd('', 'Aucune donnée'); return; }
+  setSaveInd('saved', n + ' set' + (n>1?'s':'') + ' local');
+  setTimeout(function(){ setSaveInd('', n + ' set' + (n>1?'s':'') + ' local'); }, 2000);
+}
+
+// ═══════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(function(b){ b.classList.remove('active'); });
+  if (id==='home')   { document.querySelectorAll('.nav-btn')[0].classList.add('active'); cancelMerge(); renderHome(); }
+  if (id==='create') { document.querySelectorAll('.nav-btn')[1].classList.add('active'); initCreate(); }
+}
+
+// ═══════════════════════════════════════════
 //  HOME
-// ═══════════════════════════════════
+// ═══════════════════════════════════════════
 function renderHome() {
-  const c = document.getElementById('sets-container');
+  var c = document.getElementById('sets-container');
   if (!sets.length) {
     c.innerHTML = '<div class="empty"><div class="empty-icon">📚</div><h3>Aucun set pour l\'instant</h3><p>Crée ton premier set ou importe un fichier JSON.</p></div>';
     return;
   }
-  c.innerHTML = `
-    <div class="section-row">
-      <div class="section-title">Mes sets (${sets.length})</div>
-      <button class="btn-outline" style="font-size:.8rem;padding:6px 13px" onclick="exportAllSets()">⬇ Tout exporter</button>
-    </div>
-    <div class="sets-grid">${sets.map(setCardHTML).join('')}</div>`;
+  var actions = '<div class="section-row"><div class="section-title">Mes sets ('+sets.length+')</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-ghost btn-sm" onclick="startMergeMode()">🔀 Fusionner des sets</button><button class="btn btn-ghost btn-sm" onclick="exportAll()">⬇ Tout exporter</button></div></div>';
+  var grid = '<div class="sets-grid">'+sets.map(function(s){ return setCardHTML(s); }).join('')+'</div>';
+  c.innerHTML = actions + grid;
 }
 
 function setCardHTML(s) {
-  return `<div class="set-card">
-    <div class="set-card-title">${escHtml(s.title)}</div>
-    <div class="set-card-meta">
-      <span class="set-card-count">${s.cards.length} cartes</span>
-      ${s.desc ? `<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">${escHtml(s.desc)}</span>` : ''}
-    </div>
-    <div class="set-card-actions">
-      <button class="tag-btn tag-flash"  onclick="startFlash('${s.id}')">⚡ Flashcards</button>
-      <button class="tag-btn tag-test"   onclick="startTest('${s.id}')">📝 QCM</button>
-      <button class="tag-btn tag-write"  onclick="startWrite('${s.id}')">✍ Écrit</button>
-      <button class="tag-btn tag-edit"   onclick="editSet('${s.id}')">✏️</button>
-      <button class="tag-btn tag-export" onclick="exportSet('${s.id}')" title="Exporter en JSON">⬇</button>
-      <button class="tag-btn tag-del"    onclick="deleteSet('${s.id}')">🗑</button>
-    </div>
-  </div>`;
+  return '<div class="set-card" id="sc-'+s.id+'">' +
+    '<div class="set-card-title">'+escHtml(s.title)+'</div>' +
+    '<div class="set-card-meta"><span class="badge">'+s.cards.length+' cartes</span>'+(s.desc?'<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">'+escHtml(s.desc)+'</span>':'')+'</div>' +
+    '<div class="set-card-actions">' +
+      '<button class="tag tag-flash" onclick="startFlash(\''+s.id+'\')">⚡ Flashcards</button>' +
+      '<button class="tag tag-test"  onclick="startTest(\''+s.id+'\')">📝 QCM</button>' +
+      '<button class="tag tag-write" onclick="startWrite(\''+s.id+'\')">✍ Écrit</button>' +
+      '<button class="tag tag-merge" id="mtag-'+s.id+'" onclick="toggleMerge(\''+s.id+'\')">🔀</button>' +
+      '<button class="tag tag-edit"  onclick="editSet(\''+s.id+'\')">✏️</button>' +
+      '<button class="tag tag-export" onclick="exportSet(\''+s.id+'\')">⬇</button>' +
+      '<button class="tag tag-del"   onclick="deleteSet(\''+s.id+'\')">🗑</button>' +
+    '</div>' +
+  '</div>';
 }
 
-// ═══════════════════════════════════
+// ═══════════════════════════════════════════
+//  MERGE
+// ═══════════════════════════════════════════
+var mergeIds = [];
+var mergingMode = false;
+
+function startMergeMode() {
+  mergingMode = true; mergeIds = [];
+  showToast('Clique sur les sets à fusionner, puis sur "Fusionner"');
+  document.getElementById('merge-bar').classList.add('show');
+  updateMergeBar();
+}
+
+function toggleMerge(id) {
+  if (!mergingMode) { startMergeMode(); }
+  var idx = mergeIds.indexOf(id);
+  if (idx === -1) { mergeIds.push(id); } else { mergeIds.splice(idx, 1); }
+  var sc = document.getElementById('sc-'+id);
+  var btn = document.getElementById('mtag-'+id);
+  if (sc) sc.classList.toggle('merging', mergeIds.indexOf(id) !== -1);
+  if (btn) btn.classList.toggle('merging-active', mergeIds.indexOf(id) !== -1);
+  updateMergeBar();
+}
+
+function updateMergeBar() {
+  var n = mergeIds.length;
+  document.getElementById('merge-label').textContent = '🔀 ' + n + ' set' + (n>1?'s':'') + ' sélectionné' + (n>1?'s':'');
+}
+
+function doMerge() {
+  if (mergeIds.length < 2) { showToast('Sélectionne au moins 2 sets à fusionner'); return; }
+  var name = prompt('Nom du set fusionné ?', mergeIds.map(function(id){ var s = sets.find(function(s){ return s.id===id; }); return s?s.title:''; }).join(' + '));
+  if (!name) return;
+  var cards = [];
+  mergeIds.forEach(function(id){
+    var s = sets.find(function(s){ return s.id===id; });
+    if (s) cards = cards.concat(s.cards);
+  });
+  // Deduplicate cards by term
+  var seen = {};
+  cards = cards.filter(function(c){ var k = c.term.toLowerCase(); if (seen[k]) return false; seen[k]=true; return true; });
+  var merged = { id: 'mg_'+Date.now(), title: name, desc: mergeIds.length + ' sets fusionnés', cards: cards, createdAt: new Date().toISOString() };
+  sets.unshift(merged);
+  saveSets();
+  cancelMerge();
+  renderHome();
+  showToast('✅ Set fusionné : ' + cards.length + ' cartes');
+}
+
+function cancelMerge() {
+  mergingMode = false; mergeIds = [];
+  document.getElementById('merge-bar').classList.remove('show');
+  document.querySelectorAll('.set-card').forEach(function(el){ el.classList.remove('merging'); });
+  document.querySelectorAll('.tag-merge').forEach(function(el){ el.classList.remove('merging-active'); });
+}
+
+// ═══════════════════════════════════════════
 //  JSON IMPORT / EXPORT
-// ═══════════════════════════════════
+// ═══════════════════════════════════════════
 function triggerImport() { document.getElementById('import-file').click(); }
 
 function handleImportFile(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => importJSON(ev.target.result);
-  reader.readAsText(file);
-  e.target.value = '';
+  var file = e.target.files[0]; if (!file) return;
+  var r = new FileReader();
+  r.onload = function(ev){ importJSON(ev.target.result); };
+  r.readAsText(file); e.target.value = '';
 }
 
 function handleDrop(e) {
   e.preventDefault();
   document.getElementById('drop-zone').classList.remove('drag-over');
-  const file = e.dataTransfer.files[0];
+  var file = e.dataTransfer.files[0];
   if (!file || !file.name.endsWith('.json')) { showToast('Fichier .json requis'); return; }
-  const reader = new FileReader();
-  reader.onload = ev => importJSON(ev.target.result);
-  reader.readAsText(file);
+  var r = new FileReader();
+  r.onload = function(ev){ importJSON(ev.target.result); };
+  r.readAsText(file);
 }
 
 function importJSON(text) {
   try {
-    const data = JSON.parse(text);
-    const items = Array.isArray(data) ? data : [data];
-    let imported = 0;
-    for (const item of items) {
-      if (!item.title || !Array.isArray(item.cards)) continue;
-      const exists = sets.find(s => s.title === item.title && s.cards.length === item.cards.length);
-      if (exists) { showToast(`"${item.title}" déjà présent, ignoré`); continue; }
-      sets.unshift({
-        id: 'imp_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
-        title: item.title,
-        desc: item.desc || '',
-        cards: item.cards.map(c => ({ term: String(c.term||''), def: String(c.def||'') })).filter(c => c.term || c.def),
-        createdAt: item.createdAt || new Date().toISOString()
-      });
+    var data = JSON.parse(text);
+    var items = Array.isArray(data) ? data : [data];
+    var imported = 0;
+    items.forEach(function(item){
+      if (!item.title || !Array.isArray(item.cards)) return;
+      if (sets.find(function(s){ return s.title===item.title && s.cards.length===item.cards.length; })) { showToast('"'+item.title+'" déjà présent'); return; }
+      sets.unshift({ id:'imp_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), title:item.title, desc:item.desc||'', cards:item.cards.map(function(c){ return {term:String(c.term||''),def:String(c.def||'')}; }).filter(function(c){ return c.term||c.def; }), createdAt:item.createdAt||new Date().toISOString() });
       imported++;
-    }
+    });
     saveSets();
-    if (imported) { showToast('✅ ' + imported + ' set(s) importé(s) !'); renderHome(); }
-    else showToast('Aucun set valide trouvé dans le fichier');
-  } catch(err) {
-    showToast('❌ Fichier JSON invalide');
-  }
+    if (imported) { showToast('✅ '+imported+' set(s) importé(s) !'); renderHome(); }
+    else showToast('Aucun set valide trouvé');
+  } catch(err) { showToast('❌ Fichier JSON invalide'); }
 }
 
 function exportSet(id) {
-  const s = sets.find(s => s.id === id);
-  if (!s) return;
-  const payload = { title:s.title, desc:s.desc, cards:s.cards, createdAt:s.createdAt||new Date().toISOString(), exportedAt:new Date().toISOString() };
-  downloadJSON(payload, slugify(s.title) + '.json');
-  showToast('⬇ "' + s.title + '" exporté !');
+  var s = sets.find(function(s){ return s.id===id; }); if (!s) return;
+  downloadJSON({title:s.title,desc:s.desc,cards:s.cards,createdAt:s.createdAt,exportedAt:new Date().toISOString()}, slug(s.title)+'.json');
+  showToast('⬇ "'+s.title+'" exporté !');
 }
-
-function exportAllSets() {
+function exportAll() {
   if (!sets.length) { showToast('Aucun set à exporter'); return; }
-  const payload = sets.map(s => ({ title:s.title, desc:s.desc, cards:s.cards, createdAt:s.createdAt }));
-  downloadJSON(payload, 'flashlearn_backup_' + dateStr() + '.json');
-  showToast('⬇ ' + sets.length + ' sets exportés !');
+  downloadJSON(sets.map(function(s){ return {title:s.title,desc:s.desc,cards:s.cards,createdAt:s.createdAt}; }), 'flashlearn_backup_'+ds()+'.json');
+  showToast('⬇ '+sets.length+' sets exportés !');
 }
-
 function exportCurrentDraft() {
-  const title = document.getElementById('set-title').value.trim() || 'brouillon';
-  const payload = { title, desc:document.getElementById('set-desc').value.trim(), cards:cardRows.filter(c=>c.term||c.def), createdAt:new Date().toISOString() };
-  downloadJSON(payload, slugify(title) + '.json');
+  var title = document.getElementById('set-title').value.trim()||'brouillon';
+  downloadJSON({title:title,desc:document.getElementById('set-desc').value.trim(),cards:cardRows.filter(function(c){ return c.term||c.def; }),createdAt:new Date().toISOString()}, slug(title)+'.json');
   showToast('⬇ Brouillon exporté !');
 }
-
-function downloadJSON(obj, filename) {
-  const blob = new Blob([JSON.stringify(obj, null, 2)], { type:'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = filename; a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+function downloadJSON(obj, name) {
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}));
+  a.download = name; a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
 }
+function slug(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'set'; }
+function ds(){ return new Date().toISOString().slice(0,10); }
 
-function slugify(s) { return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40) || 'set'; }
-function dateStr()  { return new Date().toISOString().slice(0,10); }
-
-// ═══════════════════════════════════
+// ═══════════════════════════════════════════
 //  CREATE / EDIT
-// ═══════════════════════════════════
-let cardRows = [];
+// ═══════════════════════════════════════════
+var cardRows = [];
 
 function initCreate() {
-  document.getElementById('create-title').textContent = editingSetId ? 'Modifier le set' : 'Nouveau set';
-  if (!editingSetId) {
+  document.getElementById('create-title').textContent = editingId ? 'Modifier le set' : 'Nouveau set';
+  if (!editingId) {
     document.getElementById('set-title').value = '';
     document.getElementById('set-desc').value = '';
-    cardRows = [{ term:'', def:'' }];
+    cardRows = [{term:'',def:''}];
   }
   renderCardRows();
 }
 
-function cancelCreate() { editingSetId = null; showPage('home'); }
+function cancelCreate() { editingId = null; showPage('home'); }
 
 function renderCardRows() {
-  document.getElementById('cards-list').innerHTML = cardRows.map((c,i) => `
-    <div class="card-row" id="crow-${i}">
-      <div class="card-row-header">
-        <span class="card-num">Carte ${i+1}</span>
-        <div class="lang-badges" id="badges-${i}"></div>
-      </div>
-      <div class="input-wrap">
-        <div class="ghost-text" id="ghost-term-${i}"></div>
-        <input class="card-input" id="term-${i}" placeholder="Terme" value="${escHtml(c.term)}"
-          oninput="onCardInput(${i},'term',this)"
-          onkeydown="onCardKeydown(event,${i},'term')"
-          onfocus="onCardFocus(${i},'term')"
-          onblur="clearGhost(${i},'term')"/>
-        <span class="tab-hint" id="hint-term-${i}">Tab ↹</span>
-      </div>
-      <div class="input-wrap">
-        <div class="ghost-text" id="ghost-def-${i}"></div>
-        <input class="card-input" id="def-${i}" placeholder="Définition" value="${escHtml(c.def)}"
-          oninput="onCardInput(${i},'def',this)"
-          onkeydown="onCardKeydown(event,${i},'def')"
-          onfocus="onCardFocus(${i},'def')"
-          onblur="clearGhost(${i},'def')"/>
-        <span class="tab-hint" id="hint-def-${i}">Tab ↹</span>
-      </div>
-      <button class="delete-btn" onclick="removeCard(${i})">✕</button>
-    </div>`).join('');
-  cardRows.forEach((_,i) => updateLangBadge(i));
+  document.getElementById('cards-list').innerHTML = cardRows.map(function(c,i){
+    return '<div class="card-row" id="crow-'+i+'">'+
+      '<div class="card-row-header"><span class="card-num">Carte '+(i+1)+'</span><div class="lang-badges" id="badges-'+i+'"></div></div>'+
+      '<div class="input-wrap"><div class="ghost-text" id="ghost-t-'+i+'"></div>'+
+        '<input class="card-input" id="t-'+i+'" placeholder="Terme" value="'+escHtml(c.term)+'"'+
+        ' oninput="onCI('+i+',\'t\',this)" onkeydown="onCK(event,'+i+',\'t\')" onfocus="onCF('+i+',\'t\')" onblur="clrGhost('+i+',\'t\')"/>'+
+        '<span class="tab-hint" id="hint-t-'+i+'">Tab ↹</span></div>'+
+      '<div class="input-wrap"><div class="ghost-text" id="ghost-d-'+i+'"></div>'+
+        '<input class="card-input" id="d-'+i+'" placeholder="Définition" value="'+escHtml(c.def)+'"'+
+        ' oninput="onCI('+i+',\'d\',this)" onkeydown="onCK(event,'+i+',\'d\')" onfocus="onCF('+i+',\'d\')" onblur="clrGhost('+i+',\'d\')"/>'+
+        '<span class="tab-hint" id="hint-d-'+i+'">Tab ↹</span></div>'+
+      '<button class="delete-btn" onclick="removeCard('+i+')">✕</button>'+
+    '</div>';
+  }).join('');
+  cardRows.forEach(function(_,i){ updateLangBadge(i); });
 }
 
 function addCard() {
-  cardRows.push({ term:'', def:'' }); renderCardRows();
-  setTimeout(() => { const el = document.getElementById('term-'+(cardRows.length-1)); if(el) el.focus(); }, 50);
+  cardRows.push({term:'',def:''}); renderCardRows();
+  setTimeout(function(){ var el=document.getElementById('t-'+(cardRows.length-1)); if(el)el.focus(); }, 50);
 }
-function removeCard(i) { if (cardRows.length===1) return; cardRows.splice(i,1); renderCardRows(); }
+function removeCard(i){ if(cardRows.length===1)return; cardRows.splice(i,1); renderCardRows(); }
 
 function saveSet() {
-  const title = document.getElementById('set-title').value.trim();
+  var title = document.getElementById('set-title').value.trim();
   if (!title) { showToast('Donne un titre à ton set !'); return; }
-  const cards = cardRows.filter(c => c.term.trim() || c.def.trim());
+  var cards = cardRows.filter(function(c){ return c.term.trim()||c.def.trim(); });
   if (cards.length < 2) { showToast('Ajoute au moins 2 cartes.'); return; }
-  if (editingSetId) {
-    const s = sets.find(s => s.id === editingSetId);
-    Object.assign(s, { title, desc:document.getElementById('set-desc').value.trim(), cards, updatedAt:new Date().toISOString() });
-    editingSetId = null;
+  if (editingId) {
+    var s = sets.find(function(s){ return s.id===editingId; });
+    s.title=title; s.desc=document.getElementById('set-desc').value.trim(); s.cards=cards; s.updatedAt=new Date().toISOString();
+    editingId=null;
   } else {
-    sets.unshift({ id:Date.now().toString(), title, desc:document.getElementById('set-desc').value.trim(), cards, createdAt:new Date().toISOString() });
+    sets.unshift({id:Date.now().toString(),title:title,desc:document.getElementById('set-desc').value.trim(),cards:cards,createdAt:new Date().toISOString()});
   }
   saveSets(); showToast('Set sauvegardé 🎉'); showPage('home');
 }
 
 function editSet(id) {
-  const s = sets.find(s => s.id === id);
-  editingSetId = id;
-  document.getElementById('set-title').value = s.title;
-  document.getElementById('set-desc').value = s.desc || '';
-  cardRows = s.cards.map(c => ({...c}));
-  showPage('create');
+  var s = sets.find(function(s){ return s.id===id; });
+  editingId=id; document.getElementById('set-title').value=s.title; document.getElementById('set-desc').value=s.desc||'';
+  cardRows=s.cards.map(function(c){ return {term:c.term,def:c.def}; }); showPage('create');
 }
 
 function deleteSet(id) {
   if (!confirm('Supprimer ce set définitivement ?')) return;
-  sets = sets.filter(s => s.id !== id);
-  saveSets(); renderHome();
+  sets=sets.filter(function(s){ return s.id!==id; }); saveSets(); renderHome();
 }
 
-// ═══════════════════════════════════
-//  LANG DETECTION (trigrams)
-// ═══════════════════════════════════
-const LANG_PROFILES = [
-  { code:'ar', name:'Arabe',       flag:'🇸🇦', re:/[\u0600-\u06FF]/ },
-  { code:'zh', name:'Chinois',     flag:'🇨🇳', re:/[\u4E00-\u9FFF]/ },
-  { code:'ja', name:'Japonais',    flag:'🇯🇵', re:/[\u3040-\u30FF]/ },
-  { code:'ko', name:'Coréen',      flag:'🇰🇷', re:/[\uAC00-\uD7AF]/ },
-  { code:'ru', name:'Russe',       flag:'🇷🇺', re:/[\u0400-\u04FF]/ },
-  { code:'el', name:'Grec',        flag:'🇬🇷', re:/[\u0370-\u03FF]/ },
-  { code:'he', name:'Hébreu',      flag:'🇮🇱', re:/[\u0590-\u05FF]/ },
-  { code:'hi', name:'Hindi',       flag:'🇮🇳', re:/[\u0900-\u097F]/ },
-  { code:'fr', name:'Français',    flag:'🇫🇷', diac:/[àâéèêëîïôùûüç]/i,
-    tri:['es ','ent','le ','de ','les','ion','que','est','on ','ons','re ','une','en ','ant','ous','ter','tio','men','eur','our','ete','eme','pas','ait','ire'] },
-  { code:'es', name:'Espagnol',    flag:'🇪🇸', diac:/[áéíóúüñ]/i,
-    tri:['de ','la ','que','es ','ent','ion','los','ado','las','con','par','as ','ien','tra','el ','aci','nte','os ','res','ara','or ','est','nto','mos','una'] },
-  { code:'de', name:'Allemand',    flag:'🇩🇪', diac:/[äöüßÄÖÜ]/i,
-    tri:['en ','der','die','und','ein','sch','ist','cht','er ','auf','ber','ung','mit','den','das','ach','gen','nen','ng ','ten','ver','des','bei','zu ','von'] },
-  { code:'it', name:'Italien',     flag:'🇮🇹', diac:/[àèéìíîòóùú]/i,
-    tri:['di ','che','la ','il ','to ','one','ent','re ','le ','in ','del','per','con','ter','men','si ','dei','ell','nto','li ','sta','pro','lla','gli','all'] },
-  { code:'pt', name:'Portugais',   flag:'🇵🇹', diac:/[ãõâêôáéíóúàç]/i,
-    tri:['de ','que','os ','da ','as ','do ','es ','em ','com','par','por','uma','nte','ade','res','ção','ent','tra','ser','ara','mos','nos','ndo','men','pro'] },
-  { code:'nl', name:'Néerlandais', flag:'🇳🇱', diac:/[]/i,
-    tri:['de ','en ','van','het','een','ing','ver','aan','aar','gen','ste','ter','te ','oor','ze ','ge ','bij','ers','sch','on ','dat','zij','ons','men','den'] },
-  { code:'en', name:'Anglais',     flag:'🇬🇧', diac:/[]/i,
-    tri:['the','ing','ion','ent','and','ati','for','her','hat','nth','ith','ter','ers','ons','is ','in ','he ','of ','to ','ed ','nd ','re ','es ','ver','al '] },
-  { code:'la', name:'Latin',       flag:'🏛️',  diac:/[]/i,
-    tri:['est','et ','que','non','in ','um ','us ','ae ','is ','tur','unt','ati','rum','mus','aut','iam','ut ','qui','sed','per','ens','ore','int','pro','ad '] },
+// ═══════════════════════════════════════════
+//  LANG DETECTION
+// ═══════════════════════════════════════════
+var LP = [
+  {code:'ar',name:'Arabe',flag:'🇸🇦',re:/[\u0600-\u06FF]/},
+  {code:'zh',name:'Chinois',flag:'🇨🇳',re:/[\u4E00-\u9FFF]/},
+  {code:'ja',name:'Japonais',flag:'🇯🇵',re:/[\u3040-\u30FF]/},
+  {code:'ko',name:'Coréen',flag:'🇰🇷',re:/[\uAC00-\uD7AF]/},
+  {code:'ru',name:'Russe',flag:'🇷🇺',re:/[\u0400-\u04FF]/},
+  {code:'el',name:'Grec',flag:'🇬🇷',re:/[\u0370-\u03FF]/},
+  {code:'he',name:'Hébreu',flag:'🇮🇱',re:/[\u0590-\u05FF]/},
+  {code:'hi',name:'Hindi',flag:'🇮🇳',re:/[\u0900-\u097F]/},
+  {code:'fr',name:'Français',flag:'🇫🇷',diac:/[àâéèêëîïôùûüç]/i,tri:['es ','ent','le ','de ','les','ion','que','est','on ','ons','re ','une','en ','ant','ous','ter','tio','men','eur']},
+  {code:'es',name:'Espagnol',flag:'🇪🇸',diac:/[áéíóúüñ]/i,tri:['de ','la ','que','es ','ent','ion','los','ado','las','con','par','as ','ien','tra','el ','aci','nte','os ']},
+  {code:'de',name:'Allemand',flag:'🇩🇪',diac:/[äöüßÄÖÜ]/i,tri:['en ','der','die','und','ein','sch','ist','cht','er ','auf','ber','ung','mit','den','das']},
+  {code:'it',name:'Italien',flag:'🇮🇹',diac:/[àèéìíîòóùú]/i,tri:['di ','che','la ','il ','to ','one','ent','re ','le ','in ','del','per','con']},
+  {code:'pt',name:'Portugais',flag:'🇵🇹',diac:/[ãõâêôáéíóúàç]/i,tri:['de ','que','os ','da ','as ','do ','es ','em ','com','par']},
+  {code:'en',name:'Anglais',flag:'🇬🇧',diac:/[]/i,tri:['the','ing','ion','ent','and','ati','for','her','hat','ith','ter','ers','ons','is ','in ']},
 ];
-
-function getTrigrams(str) {
-  const s = ' ' + str.toLowerCase().replace(/[^a-zàâéèêëîïôùûüçáéíóúüñäöüßàèéìíîòóùúãõôêâ ]/g,'') + ' ';
-  const tris = {};
-  for (let i=0; i<s.length-2; i++) { const t=s.slice(i,i+3); if(t.trim()) tris[t]=(tris[t]||0)+1; }
-  return tris;
-}
-
-function detectLang(text) {
-  if (!text||text.trim().length<3) return null;
-  const str = text.trim();
-  for (const p of LANG_PROFILES) if (p.re&&p.re.test(str)) return p;
-  if (str.replace(/[^a-zA-ZÀ-ÿ]/g,'').length<3) return null;
-  const inputTris = getTrigrams(str);
-  let best=null, bestScore=-1;
-  for (const p of LANG_PROFILES) {
-    if (!p.tri) continue;
-    let score = (str.match(p.diac)||[]).length * 8;
-    for (let r=0; r<p.tri.length; r++) if (inputTris[p.tri[r]]) score += (p.tri.length-r) * inputTris[p.tri[r]];
-    if (score>bestScore) { bestScore=score; best=p; }
+function getTri(str){ var s=' '+str.toLowerCase().replace(/[^a-zàâéèêëîïôùûüçáéíóúüñäöüß ]/g,'')+' ',t={}; for(var i=0;i<s.length-2;i++){var k=s.slice(i,i+3);if(k.trim())t[k]=(t[k]||0)+1;} return t; }
+function detectLang(text){
+  if(!text||text.trim().length<3)return null;
+  var str=text.trim();
+  for(var i=0;i<LP.length;i++)if(LP[i].re&&LP[i].re.test(str))return LP[i];
+  if(str.replace(/[^a-zA-ZÀ-ÿ]/g,'').length<3)return null;
+  var tri=getTri(str),best=null,bsc=-1;
+  for(var i=0;i<LP.length;i++){
+    var p=LP[i]; if(!p.tri)continue;
+    var sc=(str.match(p.diac)||[]).length*8;
+    for(var r=0;r<p.tri.length;r++)if(tri[p.tri[r]])sc+=(p.tri.length-r)*tri[p.tri[r]];
+    if(sc>bsc){bsc=sc;best=p;}
   }
-  const minT = str.length<6?8:str.length<15?12:16;
-  return bestScore>=minT ? best : null;
+  return bsc>=(str.length<6?8:12)?best:null;
+}
+function updateLangBadge(i){
+  var tl=detectLang(cardRows[i].term),dl=detectLang(cardRows[i].def);
+  var el=document.getElementById('badges-'+i);if(!el)return;
+  var h='';
+  if(tl)h+='<span class="lang-badge show">'+tl.flag+' '+tl.name+'</span>';
+  if(tl&&dl&&tl.code!==dl.code)h+='<span style="color:var(--muted);font-size:.7rem;margin:0 2px">→</span>';
+  if(dl&&(!tl||dl.code!==tl.code))h+='<span class="lang-badge show">'+dl.flag+' '+dl.name+'</span>';
+  el.innerHTML=h;
 }
 
-function updateLangBadge(i) {
-  const tl=detectLang(cardRows[i].term), dl=detectLang(cardRows[i].def);
-  const el=document.getElementById('badges-'+i); if(!el) return;
-  let html='';
-  if (tl) html+=`<span class="lang-badge show">${tl.flag} ${tl.name}</span>`;
-  if (tl&&dl&&tl.code!==dl.code) html+=`<span style="color:var(--text-muted);font-size:.7rem;margin:0 2px">→</span>`;
-  if (dl&&(!tl||dl.code!==tl.code)) html+=`<span class="lang-badge show">${dl.flag} ${dl.name}</span>`;
-  el.innerHTML=html;
-}
-
-// ═══════════════════════════════════
+// ═══════════════════════════════════════════
 //  AUTOCOMPLETE
-// ═══════════════════════════════════
-let ghostState = {};
-
-function getCorpus(excludeRow, field) {
-  const corpus = [];
-  cardRows.forEach((r,i) => {
-    if (i===excludeRow) return;
-    if (r.term) corpus.push(r.term); if (r.def) corpus.push(r.def);
-    [r.term,r.def].forEach(s => s&&s.split(/\s+/).forEach(w => w.length>2&&corpus.push(w)));
+// ═══════════════════════════════════════════
+var ghSt = {};
+function corpus(ei,f){
+  var c=[];
+  cardRows.forEach(function(r,i){
+    if(i===ei)return;
+    if(r.term)c.push(r.term); if(r.def)c.push(r.def);
+    [r.term,r.def].forEach(function(s){s&&s.split(/\s+/).forEach(function(w){w.length>2&&c.push(w);});});
   });
-  return corpus;
+  return c;
 }
-function findSuggestion(value, corpus) {
-  if (!value||value.length<2) return '';
-  const lower=value.toLowerCase();
-  for (const c of corpus) if (c.toLowerCase().startsWith(lower)&&c.length>value.length) return c;
-  const lastWord=value.split(' ').pop();
-  if (lastWord.length<2) return '';
-  for (const c of corpus) for (const cw of c.split(' '))
-    if (cw.toLowerCase().startsWith(lastWord.toLowerCase())&&cw.length>lastWord.length)
-      return value.slice(0,value.length-lastWord.length)+cw;
-  return '';
+function suggest(val,corp){
+  if(!val||val.length<2)return'';
+  var lo=val.toLowerCase();
+  for(var i=0;i<corp.length;i++)if(corp[i].toLowerCase().startsWith(lo)&&corp[i].length>val.length)return corp[i];
+  var lw=val.split(' ').pop(); if(lw.length<2)return'';
+  for(var i=0;i<corp.length;i++)for(var j=0,ws=corp[i].split(' ');j<ws.length;j++)
+    if(ws[j].toLowerCase().startsWith(lw.toLowerCase())&&ws[j].length>lw.length)return val.slice(0,val.length-lw.length)+ws[j];
+  return'';
 }
-function onCardInput(i,field,input) { cardRows[i][field]=input.value; updateLangBadge(i); computeGhost(i,field,input.value); }
-function onCardFocus(i,field) { const inp=document.getElementById(field+'-'+i); computeGhost(i,field,inp.value); }
-function computeGhost(i,field,value) {
-  const suggestion=findSuggestion(value,getCorpus(i,field));
-  ghostState[i+'_'+field]=suggestion;
-  renderGhost(i,field,value,suggestion);
+function onCI(i,f,inp){
+  var field=f==='t'?'term':'def'; cardRows[i][field]=inp.value; updateLangBadge(i);
+  var s=suggest(inp.value,corpus(i,f)); ghSt[i+'_'+f]=s;
+  var g=document.getElementById('ghost-'+f+'-'+i),h=document.getElementById('hint-'+f+'-'+i);
+  if(s&&s.toLowerCase().startsWith(inp.value.toLowerCase())){g.innerHTML='<span class="ghost-real">'+escHtml(inp.value)+'</span><span class="ghost-suggest">'+escHtml(s.slice(inp.value.length))+'</span>';h&&h.classList.add('visible');}
+  else{g.innerHTML='';h&&h.classList.remove('visible');}
 }
-function renderGhost(i,field,value,suggestion) {
-  const g=document.getElementById('ghost-'+field+'-'+i), h=document.getElementById('hint-'+field+'-'+i);
-  if (!g) return;
-  if (suggestion&&suggestion.toLowerCase().startsWith(value.toLowerCase())) {
-    g.innerHTML='<span class="ghost-real">'+escHtml(value)+'</span><span class="ghost-suggest">'+escHtml(suggestion.slice(value.length))+'</span>';
-    h&&h.classList.add('visible');
-  } else { g.innerHTML=''; h&&h.classList.remove('visible'); }
-}
-function clearGhost(i,field) {
-  setTimeout(()=>{
-    const g=document.getElementById('ghost-'+field+'-'+i),h=document.getElementById('hint-'+field+'-'+i);
-    if(g)g.innerHTML=''; if(h)h.classList.remove('visible');
-  },150);
-}
-function onCardKeydown(e,i,field) {
-  if (e.key==='Tab') {
-    const sug=ghostState[i+'_'+field];
-    if (sug) { e.preventDefault(); const inp=document.getElementById(field+'-'+i); inp.value=sug; cardRows[i][field]=sug; updateLangBadge(i); clearGhost(i,field); }
-  }
+function onCF(i,f){var inp=document.getElementById((f==='t'?'t':'d')+'-'+i);onCI(i,f,inp);}
+function clrGhost(i,f){setTimeout(function(){var g=document.getElementById('ghost-'+f+'-'+i),h=document.getElementById('hint-'+f+'-'+i);if(g)g.innerHTML='';if(h)h.classList.remove('visible');},150);}
+function onCK(e,i,f){
+  if(e.key==='Tab'){var s=ghSt[i+'_'+f];if(s){e.preventDefault();var inp=document.getElementById((f==='t'?'t':'d')+'-'+i);inp.value=s;cardRows[i][f==='t'?'term':'def']=s;updateLangBadge(i);clrGhost(i,f);}}
 }
 
-// ═══════════════════════════════════
+// ═══════════════════════════════════════════
 //  FLASHCARDS
-// ═══════════════════════════════════
-let currentSet,flashCards=[],flashIndex=0,flashCorrect=0,flashWrong=0,isFlipped=false,markedCards=new Set();
+// ═══════════════════════════════════════════
+var cs,fCards=[],fIdx=0,fOk=0,fKo=0,fFlipped=false,fMarked=new Set();
 
-function startFlash(id) {
-  currentSet=sets.find(s=>s.id===id);
-  flashCards=shuffle([...currentSet.cards]); flashIndex=flashCorrect=flashWrong=0; isFlipped=false; markedCards=new Set();
-  document.getElementById('flash-set-name').textContent=currentSet.title;
+function startFlash(id){
+  cs=sets.find(function(s){return s.id===id;});
+  fCards=shuffle(cs.cards.slice()); fIdx=fOk=fKo=0; fFlipped=false; fMarked=new Set();
+  document.getElementById('flash-set-name').textContent=cs.title;
   document.getElementById('flash-results').style.display='none';
   document.querySelector('.flashcard-area').style.display='';
   document.querySelector('.flashcard-controls').style.display='';
   showCard(); showPage('flash');
 }
-function showCard() {
-  const c=flashCards[flashIndex];
+function showCard(){
+  var c=fCards[fIdx];
   document.getElementById('card-front-text').textContent=c.term;
   document.getElementById('card-back-text').textContent=c.def;
-  document.getElementById('flashcard-inner').classList.remove('flipped'); isFlipped=false;
-  document.getElementById('card-counter').textContent=(flashIndex+1)+' / '+flashCards.length;
-  document.getElementById('flash-progress').style.width=(flashIndex/flashCards.length*100)+'%';
-  document.getElementById('prev-btn').disabled=flashIndex===0;
-  document.getElementById('next-btn').disabled=flashIndex===flashCards.length-1;
+  document.getElementById('flashcard-inner').classList.remove('flipped'); fFlipped=false;
+  document.getElementById('card-counter').textContent=(fIdx+1)+' / '+fCards.length;
+  document.getElementById('flash-progress').style.width=(fIdx/fCards.length*100)+'%';
+  document.getElementById('prev-btn').disabled=fIdx===0;
+  document.getElementById('next-btn').disabled=fIdx===fCards.length-1;
 }
-function flipCard() { document.getElementById('flashcard-inner').classList.toggle('flipped'); isFlipped=!isFlipped; }
-function prevCard() { if(flashIndex>0){flashIndex--;showCard();} }
-function nextCard() {
-  if(flashIndex<flashCards.length-1){flashIndex++;showCard();}
-  else if(markedCards.size===flashCards.length) showFlashResults();
+function flipCard(){ document.getElementById('flashcard-inner').classList.toggle('flipped'); fFlipped=!fFlipped; }
+function prevCard(){ if(fIdx>0){fIdx--;showCard();} }
+function nextCard(){ if(fIdx<fCards.length-1){fIdx++;showCard();}else if(fMarked.size===fCards.length)showFlashEnd(); }
+function markCard(ok){
+  if(!fMarked.has(fIdx)){fMarked.add(fIdx);if(ok)fOk++;else fKo++;}
+  if(fIdx<fCards.length-1){fIdx++;showCard();}else showFlashEnd();
 }
-function markCard(ok) {
-  if(!markedCards.has(flashIndex)){markedCards.add(flashIndex); if(ok)flashCorrect++;else flashWrong++;}
-  if(flashIndex<flashCards.length-1){flashIndex++;showCard();}else showFlashResults();
-}
-function showFlashResults() {
-  document.getElementById('flash-score').textContent=Math.round(flashCorrect/flashCards.length*100)+'%';
-  document.getElementById('flash-correct').textContent=flashCorrect;
-  document.getElementById('flash-wrong').textContent=flashWrong;
+function showFlashEnd(){
+  var pct=Math.round(fOk/fCards.length*100);
+  document.getElementById('flash-score').textContent=pct+'%';
+  document.getElementById('flash-correct').textContent=fOk;
+  document.getElementById('flash-wrong').textContent=fKo;
   document.getElementById('flash-results').style.display='block';
   document.getElementById('flash-progress').style.width='100%';
   document.querySelector('.flashcard-controls').style.display='none';
   document.querySelector('.flashcard-area').style.display='none';
+  if(pct>=80) launchConfetti();
 }
-function restartFlash() { startFlash(currentSet.id); }
+function restartFlash(){ startFlash(cs.id); }
 
-// ═══════════════════════════════════
+// ═══════════════════════════════════════════
 //  QCM
-// ═══════════════════════════════════
-let testQuestions=[],testIndex=0,testCorrect=0,testWrong=0;
-
-function startTest(id) {
-  currentSet=sets.find(s=>s.id===id);
-  if(currentSet.cards.length<4){showToast('4 cartes minimum pour le QCM');return;}
-  testQuestions=buildQuestions(currentSet.cards); testIndex=testCorrect=testWrong=0;
-  document.getElementById('test-set-name').textContent=currentSet.title;
+// ═══════════════════════════════════════════
+var tQs=[],tIdx=0,tOk=0,tKo=0;
+function startTest(id){
+  cs=sets.find(function(s){return s.id===id;});
+  if(cs.cards.length<4){showToast('4 cartes minimum pour le QCM');return;}
+  tQs=buildQs(cs.cards); tIdx=tOk=tKo=0;
+  document.getElementById('test-set-name').textContent=cs.title;
   document.getElementById('test-results').style.display='none';
   document.getElementById('test-content').style.display='block';
-  showQuestion(); showPage('test');
+  showQ(); showPage('test');
 }
-function buildQuestions(cards) {
-  return shuffle([...cards]).map(card => {
-    const wrong=shuffle(cards.filter(c=>c!==card)).slice(0,3).map(c=>c.def);
-    return { question:card.term, answer:card.def, options:shuffle([card.def,...wrong]) };
+function buildQs(cards){
+  return shuffle(cards.slice()).map(function(card){
+    var wrong=shuffle(cards.filter(function(c){return c!==card;})).slice(0,3).map(function(c){return c.def;});
+    return {q:card.term,a:card.def,opts:shuffle([card.def].concat(wrong))};
   });
 }
-function showQuestion() {
-  const q=testQuestions[testIndex];
-  document.getElementById('test-progress').style.width=(testIndex/testQuestions.length*100)+'%';
-  document.getElementById('test-question').textContent=q.question;
-  document.getElementById('test-feedback').className='test-feedback';
+function showQ(){
+  var q=tQs[tIdx];
+  document.getElementById('test-progress').style.width=(tIdx/tQs.length*100)+'%';
+  document.getElementById('test-question').textContent=q.q;
+  document.getElementById('test-feedback').className='feedback';
   document.getElementById('test-next-btn').style.display='none';
-  document.getElementById('test-options').innerHTML=q.options.map(opt=>
-    '<button class="option-btn" onclick="answerQuestion(this,\''+escAttr(opt)+'\',\''+escAttr(q.answer)+'\')">'+escHtml(opt)+'</button>'
-  ).join('');
+  document.getElementById('test-options').innerHTML=q.opts.map(function(opt){
+    return '<button class="option-btn" onclick="answerQ(this,\''+escAttr(opt)+'\',\''+escAttr(q.a)+'\')">'+escHtml(opt)+'</button>';
+  }).join('');
 }
-function answerQuestion(btn,chosen,answer) {
-  document.querySelectorAll('.option-btn').forEach(b=>b.disabled=true);
-  const fb=document.getElementById('test-feedback');
-  if(chosen===answer){
-    btn.classList.add('correct'); testCorrect++;
-    fb.textContent='✓ Bonne réponse !'; fb.className='test-feedback show good';
-  } else {
-    btn.classList.add('wrong'); testWrong++;
-    [...document.querySelectorAll('.option-btn')].find(b=>b.textContent===answer)?.classList.add('correct');
-    fb.textContent='✗ Bonne réponse : '+answer; fb.className='test-feedback show bad';
-  }
-  const nb=document.getElementById('test-next-btn'); nb.style.display='';
-  nb.textContent=testIndex===testQuestions.length-1?'Voir les résultats':'Suivant →';
+function answerQ(btn,chosen,answer){
+  document.querySelectorAll('.option-btn').forEach(function(b){b.disabled=true;});
+  var fb=document.getElementById('test-feedback');
+  if(chosen===answer){btn.classList.add('correct');tOk++;fb.textContent='✓ Bonne réponse !';fb.className='feedback show fb-good';}
+  else{btn.classList.add('wrong');tKo++;var cb=[].slice.call(document.querySelectorAll('.option-btn')).find(function(b){return b.textContent===answer;});if(cb)cb.classList.add('correct');fb.textContent='✗ Bonne réponse : '+answer;fb.className='feedback show fb-bad';}
+  var nb=document.getElementById('test-next-btn');nb.style.display='';nb.textContent=tIdx===tQs.length-1?'Voir les résultats':'Suivant →';
 }
-function nextQuestion() { testIndex++; if(testIndex>=testQuestions.length)showTestResults();else showQuestion(); }
-function showTestResults() {
-  document.getElementById('test-score-num').textContent=Math.round(testCorrect/testQuestions.length*100)+'%';
-  document.getElementById('test-correct').textContent=testCorrect;
-  document.getElementById('test-wrong').textContent=testWrong;
+function nextQ(){ tIdx++; if(tIdx>=tQs.length)showTestEnd(); else showQ(); }
+function showTestEnd(){
+  var pct=Math.round(tOk/tQs.length*100);
+  document.getElementById('test-score-num').textContent=pct+'%';
+  document.getElementById('test-correct').textContent=tOk;
+  document.getElementById('test-wrong').textContent=tKo;
   document.getElementById('test-results').style.display='block';
   document.getElementById('test-content').style.display='none';
   document.getElementById('test-progress').style.width='100%';
+  if(pct>=80) launchConfetti();
 }
-function restartTest() { startTest(currentSet.id); }
+function restartTest(){ startTest(cs.id); }
 
-// ═══════════════════════════════════
-//  WRITE MODE
-// ═══════════════════════════════════
-let writeCards=[],writeIndex=0,writeCorrect=0,writeAlmost=0,writeWrong=0,writeStreak=[],writeMissed=[],writeAnswered=false;
-
-function startWrite(id) {
-  currentSet=sets.find(s=>s.id===id);
-  writeCards=shuffle([...currentSet.cards]); writeIndex=writeCorrect=writeAlmost=writeWrong=0;
-  writeStreak=[]; writeMissed=[]; writeAnswered=false;
-  document.getElementById('write-set-name').textContent=currentSet.title;
+// ═══════════════════════════════════════════
+//  WRITE
+// ═══════════════════════════════════════════
+var wCards=[],wIdx=0,wOk=0,wAlmost=0,wKo=0,wStreak=[],wMissed=[],wAnswered=false;
+function startWrite(id){
+  cs=sets.find(function(s){return s.id===id;});
+  wCards=shuffle(cs.cards.slice()); wIdx=wOk=wAlmost=wKo=0; wStreak=[]; wMissed=[]; wAnswered=false;
+  document.getElementById('write-set-name').textContent=cs.title;
   document.getElementById('write-results').style.display='none';
   document.getElementById('write-content').style.display='block';
-  showWriteQuestion(); showPage('write');
+  showWQ(); showPage('write');
 }
-
-function showWriteQuestion() {
-  if (writeIndex>=writeCards.length){showWriteResults();return;}
-  const c=writeCards[writeIndex];
-  document.getElementById('write-progress').style.width=(writeIndex/writeCards.length*100)+'%';
+function showWQ(){
+  if(wIdx>=wCards.length){showWriteEnd();return;}
+  var c=wCards[wIdx];
+  document.getElementById('write-progress').style.width=(wIdx/wCards.length*100)+'%';
   document.getElementById('write-prompt').textContent=c.term;
-  const inp=document.getElementById('write-input');
+  var inp=document.getElementById('write-input');
   inp.value=''; inp.className='write-answer-input'; inp.disabled=false;
   document.getElementById('write-feedback').className='write-feedback';
   document.getElementById('write-submit-btn').style.display='';
   document.getElementById('write-next-btn').style.display='none';
   document.getElementById('write-skip-btn').style.display='';
-  writeAnswered=false;
-  renderStreak();
-  setTimeout(()=>inp.focus(),80);
+  wAnswered=false; renderStreak(); setTimeout(function(){inp.focus();},80);
 }
-
-function checkWriteAnswer() {
-  if (writeAnswered) return;
-  const inp=document.getElementById('write-input');
-  const userAns=inp.value.trim();
-  if (!userAns){showToast('Tape une réponse d\'abord !');return;}
-  const expected=writeCards[writeIndex].def;
-  const result=scoreAnswer(userAns,expected);
-  writeAnswered=true; inp.disabled=true;
-  const fb=document.getElementById('write-feedback');
+function checkWrite(){
+  if(wAnswered)return;
+  var inp=document.getElementById('write-input'),ua=inp.value.trim();
+  if(!ua){showToast('Tape une réponse !');return;}
+  var exp=wCards[wIdx].def,res=scoreAnswer(ua,exp);
+  wAnswered=true; inp.disabled=true;
+  var fb=document.getElementById('write-feedback');
   document.getElementById('write-submit-btn').style.display='none';
   document.getElementById('write-skip-btn').style.display='none';
-  const nb=document.getElementById('write-next-btn'); nb.style.display='';
-  nb.textContent=writeIndex===writeCards.length-1?'Voir les résultats':'Suivant →';
-
-  if (result==='correct') {
-    writeCorrect++; writeStreak.push('ok'); inp.classList.add('state-correct');
-    fb.innerHTML='✓ Correct !'; fb.className='write-feedback show good';
-  } else if (result==='almost') {
-    writeAlmost++; writeMissed.push(writeCards[writeIndex]); writeStreak.push('skip');
-    inp.classList.add('state-almost');
-    fb.innerHTML='🔶 Presque ! Réponse attendue : <strong>'+escHtml(expected)+'</strong>';
-    fb.className='write-feedback show almost';
-  } else {
-    writeWrong++; writeMissed.push(writeCards[writeIndex]); writeStreak.push('ko');
-    inp.classList.add('state-wrong');
-    fb.innerHTML='✗ Incorrect. Bonne réponse : <strong>'+escHtml(expected)+'</strong>';
-    fb.className='write-feedback show bad';
-  }
+  var nb=document.getElementById('write-next-btn');nb.style.display='';nb.textContent=wIdx===wCards.length-1?'Voir les résultats':'Suivant →';
+  if(res==='correct'){wOk++;wStreak.push('ok');inp.classList.add('s-ok');fb.innerHTML='✓ Correct !';fb.className='write-feedback show wf-good';}
+  else if(res==='almost'){wAlmost++;wMissed.push(wCards[wIdx]);wStreak.push('sk');inp.classList.add('s-almost');fb.innerHTML='🔶 Presque ! Réponse : <strong>'+escHtml(exp)+'</strong>';fb.className='write-feedback show wf-almost';}
+  else{wKo++;wMissed.push(wCards[wIdx]);wStreak.push('ko');inp.classList.add('s-ko');fb.innerHTML='✗ Incorrect. Réponse : <strong>'+escHtml(exp)+'</strong>';fb.className='write-feedback show wf-bad';}
   renderStreak();
 }
-
-function scoreAnswer(user,expected) {
-  const u=user.toLowerCase().trim(), e=expected.toLowerCase().trim();
-  if (u===e) return 'correct';
-  // Collapse all whitespace variations — "Le Caire" vs "Le  Caire" or "LeCaire" all count as correct
-  const normSpaces=s=>s.replace(/\s+/g,' ').trim();
-  if (normSpaces(u)===normSpaces(e)) return 'correct';
-  // Strip spaces entirely — "Buenos Aires" vs "BuenosAires"
-  const noSpace=s=>s.replace(/\s/g,'');
-  if (noSpace(u)===noSpace(e)) return 'correct';
-  // Normalize accents + punctuation + whitespace
-  const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim();
-  if (norm(u)===norm(e)) return 'correct';
-  if (noSpace(norm(u))===noSpace(norm(e))) return 'correct';
-  const dist=levenshtein(u,e), maxLen=Math.max(u.length,e.length);
-  if (dist<=Math.max(1,Math.floor(maxLen*0.2))) return 'almost';
-  if (e.includes(u)&&u.length>=e.length*0.6) return 'almost';
-  return 'wrong';
+function scoreAnswer(user,expected){
+  var u=user.toLowerCase().trim(),e=expected.toLowerCase().trim();
+  if(u===e)return'correct';
+  var ns=function(s){return s.replace(/\s+/g,' ').trim();};
+  if(ns(u)===ns(e))return'correct';
+  var no=function(s){return s.replace(/\s/g,'');};
+  if(no(u)===no(e))return'correct';
+  var nr=function(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim();};
+  if(nr(u)===nr(e)||no(nr(u))===no(nr(e)))return'correct';
+  var d=lev(u,e),m=Math.max(u.length,e.length);
+  if(d<=Math.max(1,Math.floor(m*0.2)))return'almost';
+  if(e.includes(u)&&u.length>=e.length*0.6)return'almost';
+  return'wrong';
 }
-
-function levenshtein(a,b) {
-  const m=a.length,n=b.length,dp=[];
-  for(let i=0;i<=m;i++){dp[i]=[];for(let j=0;j<=n;j++)dp[i][j]=i?j?Infinity:i:j;}
-  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++)
-    dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
+function lev(a,b){
+  var m=a.length,n=b.length,dp=[];
+  for(var i=0;i<=m;i++){dp[i]=[];for(var j=0;j<=n;j++)dp[i][j]=i?j?Infinity:i:j;}
+  for(var i=1;i<=m;i++)for(var j=1;j<=n;j++)dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
   return dp[m][n];
 }
-
-function skipWriteQuestion() { writeWrong++; writeMissed.push(writeCards[writeIndex]); writeStreak.push('ko'); writeIndex++; showWriteQuestion(); }
-function nextWriteQuestion() { writeIndex++; showWriteQuestion(); }
-function renderStreak() {
-  document.getElementById('write-streak').innerHTML=writeStreak.map(s=>'<div class="streak-dot '+s+'"></div>').join('');
-}
-function showWriteResults() {
-  const total=writeCards.length;
-  document.getElementById('write-score-num').textContent=Math.round(writeCorrect/total*100)+'%';
-  document.getElementById('write-correct').textContent=writeCorrect;
-  document.getElementById('write-almost').textContent=writeAlmost;
-  document.getElementById('write-wrong').textContent=writeWrong;
+function skipWrite(){wKo++;wMissed.push(wCards[wIdx]);wStreak.push('ko');wIdx++;showWQ();}
+function nextWrite(){wIdx++;showWQ();}
+function renderStreak(){ document.getElementById('write-streak').innerHTML=wStreak.map(function(s){return'<div class="streak-dot '+s+'"></div>';}).join(''); }
+function showWriteEnd(){
+  var t=wCards.length,pct=Math.round(wOk/t*100);
+  document.getElementById('write-score-num').textContent=pct+'%';
+  document.getElementById('write-correct').textContent=wOk;
+  document.getElementById('write-almost').textContent=wAlmost;
+  document.getElementById('write-wrong').textContent=wKo;
   document.getElementById('write-results').style.display='block';
   document.getElementById('write-content').style.display='none';
   document.getElementById('write-progress').style.width='100%';
-  document.getElementById('write-retry-btn').style.display=writeMissed.length?'':'none';
+  document.getElementById('write-retry-btn').style.display=wMissed.length?'':'none';
+  if(pct>=80) launchConfetti();
 }
-function restartWrite() { startWrite(currentSet.id); }
-function retryWrongWrite() {
-  if (!writeMissed.length) return;
-  writeCards=shuffle([...writeMissed]); writeIndex=writeCorrect=writeAlmost=writeWrong=0;
-  writeStreak=[]; writeMissed=[]; writeAnswered=false;
+function restartWrite(){ startWrite(cs.id); }
+function retryWrong(){
+  if(!wMissed.length)return;
+  wCards=shuffle(wMissed.slice()); wIdx=wOk=wAlmost=wKo=0; wStreak=[]; wMissed=[]; wAnswered=false;
   document.getElementById('write-results').style.display='none';
   document.getElementById('write-content').style.display='block';
-  showWriteQuestion();
+  showWQ();
 }
 
-// ═══════════════════════════════════
+// ═══════════════════════════════════════════
+//  CONFETTI
+// ═══════════════════════════════════════════
+function launchConfetti(){
+  var canvas=document.getElementById('confetti-canvas');
+  var ctx=canvas.getContext('2d');
+  canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+  var pieces=[];
+  var colors=['#6c63ff','#43e97b','#ff6584','#fbbf24','#a5a1ff','#fff'];
+  for(var i=0;i<160;i++){
+    pieces.push({
+      x:Math.random()*canvas.width,y:-20,
+      w:Math.random()*10+4,h:Math.random()*6+3,
+      color:colors[Math.floor(Math.random()*colors.length)],
+      vx:(Math.random()-0.5)*4,vy:Math.random()*4+2,
+      rot:Math.random()*360,vr:(Math.random()-0.5)*8,
+      alpha:1
+    });
+  }
+  var start=null;
+  function frame(ts){
+    if(!start)start=ts;
+    var elapsed=ts-start;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(function(p){
+      p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr;
+      p.vy+=0.05; // gravity
+      if(elapsed>1500)p.alpha=Math.max(0,p.alpha-0.02);
+      ctx.save();
+      ctx.globalAlpha=p.alpha;
+      ctx.translate(p.x+p.w/2,p.y+p.h/2);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle=p.color;
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+    });
+    if(elapsed<3000) requestAnimationFrame(frame);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  requestAnimationFrame(frame);
+}
+
+// ═══════════════════════════════════════════
 //  DEMO
-// ═══════════════════════════════════
-function loadDemo() {
-  const demo={id:'demo_'+Date.now(),title:'🌍 Capitales du monde',desc:'Un set d\'exemple',createdAt:new Date().toISOString(),cards:[
+// ═══════════════════════════════════════════
+function loadDemo(){
+  var d={id:'demo_'+Date.now(),title:'🌍 Capitales du monde',desc:'Un set d\'exemple',createdAt:new Date().toISOString(),cards:[
     {term:'France',def:'Paris'},{term:'Japon',def:'Tokyo'},{term:'Brésil',def:'Brasília'},
     {term:'Australie',def:'Canberra'},{term:'Égypte',def:'Le Caire'},{term:'Canada',def:'Ottawa'},
     {term:'Argentine',def:'Buenos Aires'},{term:'Inde',def:'New Delhi'},{term:'Allemagne',def:'Berlin'},
     {term:'Italie',def:'Rome'},{term:'Espagne',def:'Madrid'},{term:'Mexique',def:'Mexico'}
   ]};
-  sets.unshift(demo); saveSets(); showToast('Set démo ajouté !'); renderHome();
+  sets.unshift(d); saveSets(); showToast('Set démo ajouté !'); renderHome();
 }
 
-// ═══════════════════════════════════
+// ═══════════════════════════════════════════
 //  UTILS
-// ═══════════════════════════════════
-function shuffle(arr) { for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr; }
-function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function escAttr(s) { return String(s).replace(/'/g,"\\'"); }
+// ═══════════════════════════════════════════
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function escAttr(s){return String(s).replace(/'/g,"\\'");}
+var toastT;
+function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show');},2800);}
 
-let toastTimer;
-function showToast(msg) {
-  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
-  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2700);
-}
-
-// ═══════════════════════════════════
-//  KEYBOARD
-// ═══════════════════════════════════
-document.addEventListener('keydown', e => {
-  if (document.getElementById('page-flash').classList.contains('active')) {
+document.addEventListener('keydown',function(e){
+  if(document.getElementById('page-flash').classList.contains('active')){
     if(e.key===' '||e.key==='ArrowUp'){e.preventDefault();flipCard();}
-    if(e.key==='ArrowLeft') prevCard();
-    if(e.key==='ArrowRight') nextCard();
+    if(e.key==='ArrowLeft')prevCard();
+    if(e.key==='ArrowRight')nextCard();
   }
 });
 
 renderHome();
+updateSaveInd();
 </script>
 
 </body>
