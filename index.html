@@ -80,6 +80,14 @@ background:linear-gradient(180deg,#fbbf24 0%,#ff6584 100%);
 -webkit-text-fill-color:transparent;
 margin:0 0 0 6px; white-space:pre; letter-spacing:.04em; align-self:center;
 }
+.version-badge {
+font-family:‘DM Sans’,sans-serif; font-size:.6rem; font-weight:700;
+color:#6c63ff; -webkit-text-fill-color:#6c63ff;
+background:rgba(108,99,255,.12); border:1px solid rgba(108,99,255,.3);
+border-radius:6px; padding:2px 6px; letter-spacing:.04em;
+align-self:flex-end; margin-bottom:3px; margin-left:5px;
+white-space:nowrap; line-height:1;
+}
 @media(max-width:900px){ .logo pre { font-size:.19rem; } .bolt-art { font-size:.19rem; } }
 @media(max-width:600px){ .logo pre { font-size:.13rem; } .bolt-art { font-size:.13rem; } }
 .nav-links { display:flex; gap:4px; }
@@ -129,11 +137,12 @@ border:1.5px solid #2a2a42;
 .btn-danger:hover { background:rgba(255,101,132,.25); }
 .back-btn {
 width:40px; height:40px; border-radius:12px; flex-shrink:0;
-background:var(–surface); border:1px solid var(–border); color:var(–text) !important;
--webkit-text-fill-color:var(–text) !important;
+background:#13131f; border:1px solid #2a2a42; color:#e8e8f0 !important;
+-webkit-text-fill-color:#e8e8f0 !important;
 display:flex; align-items:center; justify-content:center; font-size:1.1rem; cursor:pointer; transition:all .2s;
 }
-.back-btn:hover { border-color:var(–accent); color:var(–accent) !important; -webkit-text-fill-color:var(–accent) !important; }
+.back-btn:hover { border-color:#6c63ff; color:#6c63ff !important; -webkit-text-fill-color:#6c63ff !important; }
+.back-btn svg { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
 
 /* ═══ PAGES ═══ */
 .app { position:relative; z-index:1; -webkit-text-fill-color:#e8e8f0; color:#e8e8f0; }
@@ -282,12 +291,14 @@ opacity:0; pointer-events:none; white-space:nowrap;
 .create-header { display:flex; align-items:center; gap:14px; margin-bottom:22px; }
 .create-header h2 { font-family:‘Syne’,sans-serif; font-size:1.7rem; font-weight:800; }
 .input-field {
-width:100%; background:var(–surface); border:1.5px solid var(–border);
-border-radius:12px; color:var(–text); font-family:‘DM Sans’,sans-serif;
+width:100%; background:#13131f; border:1.5px solid #2a2a42;
+border-radius:12px; color:#e8e8f0 !important; -webkit-text-fill-color:#e8e8f0 !important;
+font-family:‘DM Sans’,sans-serif;
 font-size:1rem; padding:11px 15px; outline:none; transition:border-color .2s;
+-webkit-appearance:none; appearance:none;
 }
-.input-field:focus { border-color:var(–accent); }
-.input-field::placeholder { color:var(–muted); }
+.input-field:focus { border-color:#6c63ff; }
+.input-field::placeholder { color:#7a7a9d; -webkit-text-fill-color:#7a7a9d; }
 .cards-list { display:flex; flex-direction:column; gap:10px; margin:20px 0; }
 .card-row {
 display:grid; grid-template-columns:1fr 1fr auto; gap:10px; align-items:center;
@@ -297,11 +308,13 @@ background:var(–surface); border:1.5px solid var(–border); border-radius:14p
 .card-row-header { display:flex; align-items:center; justify-content:space-between; grid-column:1/-1; margin-bottom:-2px; }
 .card-num { color:var(–muted); font-size:.78rem; font-weight:600; }
 .card-input {
-background:var(–surface2); border:1.5px solid transparent; border-radius:10px; color:var(–text);
+background:#1c1c2e; border:1.5px solid transparent; border-radius:10px;
+color:#e8e8f0 !important; -webkit-text-fill-color:#e8e8f0 !important;
 font-family:‘DM Sans’,sans-serif; font-size:.92rem; padding:9px 13px; outline:none; width:100%; transition:border-color .2s;
+-webkit-appearance:none; appearance:none;
 }
-.card-input:focus { border-color:var(–accent); }
-.card-input::placeholder { color:var(–muted); }
+.card-input:focus { border-color:#6c63ff; }
+.card-input::placeholder { color:#7a7a9d; -webkit-text-fill-color:#7a7a9d; }
 .delete-btn {
 width:34px; height:34px; border-radius:9px; border:none; cursor:pointer;
 background:rgba(255,101,132,.1); color:#ff9bb0 !important; -webkit-text-fill-color:#ff9bb0 !important;
@@ -376,15 +389,17 @@ font-family:‘DM Sans’,sans-serif; font-size:.95rem; padding:16px 18px; borde
 .write-prompt-label { font-size:.72rem; text-transform:uppercase; letter-spacing:2px; color:var(–muted); margin-bottom:10px; font-weight:600; }
 .write-prompt { font-family:‘Syne’,sans-serif; font-size:clamp(1.2rem,3.5vw,1.65rem); font-weight:700; margin-bottom:24px; line-height:1.3; }
 .write-answer-input {
-width:100%; background:var(–surface2); border:2px solid var(–border); border-radius:13px; color:var(–text);
+width:100%; background:#1c1c2e; border:2px solid #2a2a42; border-radius:13px;
+color:#e8e8f0 !important; -webkit-text-fill-color:#e8e8f0 !important;
 font-family:‘DM Sans’,sans-serif; font-size:1.02rem; padding:13px 16px; outline:none;
 transition:border-color .25s; resize:none; min-height:56px;
+-webkit-appearance:none; appearance:none;
 }
-.write-answer-input:focus { border-color:var(–accent); }
-.write-answer-input::placeholder { color:var(–muted); }
-.write-answer-input.s-ok     { border-color:var(–accent3); background:rgba(67,233,123,.06); }
-.write-answer-input.s-almost { border-color:var(–gold);    background:rgba(251,191,36,.06); }
-.write-answer-input.s-ko     { border-color:var(–accent2); background:rgba(255,101,132,.06); }
+.write-answer-input:focus { border-color:#6c63ff; }
+.write-answer-input::placeholder { color:#7a7a9d; -webkit-text-fill-color:#7a7a9d; }
+.write-answer-input.s-ok     { border-color:#43e97b; background:rgba(67,233,123,.08); }
+.write-answer-input.s-almost { border-color:#fbbf24; background:rgba(251,191,36,.08); }
+.write-answer-input.s-ko     { border-color:#ff6584; background:rgba(255,101,132,.08); }
 .write-actions { display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; align-items:center; }
 .write-feedback { margin-top:14px; padding:13px 16px; border-radius:12px; font-size:.93rem; font-weight:500; display:none; line-height:1.5; }
 .write-feedback.show { display:block; animation:fadeUp .22s; }
@@ -506,7 +521,7 @@ nav{padding:0 14px;}
   ████    
  ████     
 ████      
-███       </pre></div>
+███       </pre><span class="version-badge">v2.4.1</span></div>
   <div class="nav-links">
     <button class="nav-btn active" onclick="showPage('home')">Accueil</button>
     <button class="nav-btn" onclick="showPage('create')">Créer</button>
@@ -557,7 +572,7 @@ nav{padding:0 14px;}
 
   <div id="page-create" class="page">
     <div class="create-header">
-      <button class="back-btn" onclick="cancelCreate()">←</button>
+      <button class="back-btn" onclick="cancelCreate()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
       <h2 id="create-title">Nouveau set</h2>
     </div>
     <input type="text" class="input-field" id="set-title" placeholder="Titre du set" style="margin-bottom:10px">
@@ -575,7 +590,7 @@ nav{padding:0 14px;}
 
   <div id="page-flash" class="page">
     <div class="study-header">
-      <button class="back-btn" onclick="showPage('home')">←</button>
+      <button class="back-btn" onclick="showPage('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
       <div><div class="study-mode-label">⚡ FLASHCARDS</div><div class="study-title" id="flash-set-name"></div></div>
     </div>
     <div class="progress-bar-wrap"><div class="progress-bar" id="flash-progress" style="width:0%"></div></div>
@@ -621,7 +636,7 @@ nav{padding:0 14px;}
 
   <div id="page-test" class="page">
     <div class="study-header">
-      <button class="back-btn" onclick="showPage('home')">←</button>
+      <button class="back-btn" onclick="showPage('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
       <div><div class="study-mode-label">📝 TEST — QCM</div><div class="study-title" id="test-set-name"></div></div>
     </div>
     <div class="progress-bar-wrap"><div class="progress-bar" id="test-progress" style="width:0%"></div></div>
@@ -651,7 +666,7 @@ nav{padding:0 14px;}
 
   <div id="page-write" class="page">
     <div class="study-header">
-      <button class="back-btn" onclick="showPage('home')">←</button>
+      <button class="back-btn" onclick="showPage('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
       <div><div class="study-mode-label">✍ QUESTIONS ÉCRITES</div><div class="study-title" id="write-set-name"></div></div>
     </div>
     <div class="progress-bar-wrap"><div class="progress-bar" id="write-progress" style="width:0%"></div></div>
