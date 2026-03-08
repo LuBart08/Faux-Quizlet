@@ -397,9 +397,14 @@ transition:border-color .25s; resize:none; min-height:56px;
 }
 .write-answer-input:focus { border-color:#6c63ff; }
 .write-answer-input::placeholder { color:#7a7a9d; -webkit-text-fill-color:#7a7a9d; }
-.write-answer-input.s-ok     { border-color:#43e97b; background:rgba(67,233,123,.08); }
-.write-answer-input.s-almost { border-color:#fbbf24; background:rgba(251,191,36,.08); }
-.write-answer-input.s-ko     { border-color:#ff6584; background:rgba(255,101,132,.08); }
+.write-answer-input:disabled {
+background:#1c1c2e !important; color:#e8e8f0 !important;
+-webkit-text-fill-color:#e8e8f0 !important; opacity:1 !important;
+-webkit-opacity:1 !important;
+}
+.write-answer-input.s-ok     { border-color:#43e97b !important; background:rgba(67,233,123,.08) !important; }
+.write-answer-input.s-almost { border-color:#fbbf24 !important; background:rgba(251,191,36,.08) !important; }
+.write-answer-input.s-ko     { border-color:#ff6584 !important; background:rgba(255,101,132,.08) !important; }
 .write-actions { display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; align-items:center; }
 .write-feedback { margin-top:14px; padding:13px 16px; border-radius:12px; font-size:.93rem; font-weight:500; display:none; line-height:1.5; }
 .write-feedback.show { display:block; animation:fadeUp .22s; }
@@ -521,7 +526,7 @@ nav{padding:0 14px;}
   ████    
  ████     
 ████      
-███       </pre><span class="version-badge">v2.4.1</span></div>
+███       </pre><span class="version-badge">v2.4.2</span></div>
   <div class="nav-links">
     <button class="nav-btn active" onclick="showPage('home')">Accueil</button>
     <button class="nav-btn" onclick="showPage('create')">Créer</button>
@@ -675,7 +680,7 @@ nav{padding:0 14px;}
         <div class="write-prompt-label">Quelle est la définition de :</div>
         <div class="write-prompt" id="write-prompt"></div>
         <textarea class="write-answer-input" id="write-input" placeholder="Tape ta réponse… (Entrée pour valider)" rows="2"
-          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();checkWrite();}"></textarea>
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();wAnswered?nextWrite():checkWrite();}"></textarea>
         <div class="hint-box" id="hint-box">
           <span class="hint-label">💡 Indice</span>
           <span id="hint-text"></span>
