@@ -526,7 +526,7 @@ nav{padding:0 14px;}
   ████    
  ████     
 ████      
-███       </pre><span class="version-badge">v2.4.2</span></div>
+███       </pre><span class="version-badge">v2.4.3</span></div>
   <div class="nav-links">
     <button class="nav-btn active" onclick="showPage('home')">Accueil</button>
     <button class="nav-btn" onclick="showPage('create')">Créer</button>
@@ -680,7 +680,7 @@ nav{padding:0 14px;}
         <div class="write-prompt-label">Quelle est la définition de :</div>
         <div class="write-prompt" id="write-prompt"></div>
         <textarea class="write-answer-input" id="write-input" placeholder="Tape ta réponse… (Entrée pour valider)" rows="2"
-          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();wAnswered?nextWrite():checkWrite();}"></textarea>
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!wAnswered){event.preventDefault();checkWrite();}"></textarea>
         <div class="hint-box" id="hint-box">
           <span class="hint-label">💡 Indice</span>
           <span id="hint-text"></span>
@@ -1406,6 +1406,13 @@ document.addEventListener('keydown',function(e){
     if(e.key===' '||e.key==='ArrowUp'){e.preventDefault();flipCard();}
     if(e.key==='ArrowLeft')prevCard();
     if(e.key==='ArrowRight')nextCard();
+  }
+  // Write mode: Enter to go to next question after answering (works even on disabled textarea)
+  if(document.getElementById('page-write').classList.contains('active')){
+    if(e.key==='Enter'&&!e.shiftKey&&wAnswered){
+      e.preventDefault();
+      nextWrite();
+    }
   }
 });
 
