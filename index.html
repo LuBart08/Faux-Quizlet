@@ -44,16 +44,34 @@ animation:orbFloat linear infinite;
 nav {
 position:sticky; top:0; z-index:100;
 display:flex; align-items:center; justify-content:space-between;
-padding:0 28px; height:64px;
+padding:0 28px; height:72px;
 background:rgba(10,10,18,.82); backdrop-filter:blur(22px);
 border-bottom:1px solid var(–border);
 }
 .logo {
-font-family:‘Syne’,sans-serif; font-weight:800; font-size:1.35rem;
-background:linear-gradient(135deg,#6c63ff,#43e97b);
--webkit-background-clip:text; -webkit-text-fill-color:transparent;
-letter-spacing:-.5px; cursor:pointer; user-select:none;
+cursor:pointer; user-select:none; display:flex; align-items:center;
+line-height:1;
 }
+.logo pre {
+font-family:‘Courier New’,monospace;
+font-size:.34rem;
+line-height:1.18;
+background:linear-gradient(135deg,#6c63ff 0%,#a5a1ff 45%,#43e97b 100%);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+margin:0; white-space:pre; letter-spacing:.04em;
+}
+.bolt-art {
+font-family:‘Courier New’,monospace;
+font-size:.34rem;
+line-height:1.18;
+background:linear-gradient(180deg,#fbbf24 0%,#ff6584 100%);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+margin:0 0 0 6px; white-space:pre; letter-spacing:.04em; align-self:center;
+}
+@media(max-width:900px){ .logo pre { font-size:.24rem; } .bolt-art { font-size:.24rem; } }
+@media(max-width:600px){ .logo pre { font-size:.18rem; } .bolt-art { font-size:.18rem; } }
 .nav-links { display:flex; gap:4px; }
 .nav-btn {
 background:none; border:none; font-family:‘DM Sans’,sans-serif; font-size:.88rem;
@@ -135,16 +153,83 @@ text-align:center; cursor:pointer; transition:all .2s; margin-bottom:30px; color
 .sets-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:14px; margin-bottom:40px; }
 
 .set-card {
-background:var(–surface); border:1px solid var(–border); border-radius:var(–radius);
+background:var(–surface);
+border:1.5px solid var(–border);
+border-radius:var(–radius);
 padding:20px; transition:all .22s; position:relative; overflow:hidden;
+box-shadow:0 2px 12px rgba(0,0,0,.25);
 }
 .set-card::before {
 content:’’; position:absolute; top:0; left:0; right:0; height:3px;
 background:linear-gradient(90deg,var(–accent),var(–accent3)); opacity:0; transition:opacity .22s;
 }
-.set-card:hover { border-color:var(–accent); transform:translateY(-3px); box-shadow:0 8px 28px rgba(108,99,255,.18); }
+.set-card:hover { border-color:var(–accent); transform:translateY(-3px); box-shadow:0 8px 28px rgba(108,99,255,.25); }
 .set-card:hover::before { opacity:1; }
 .set-card.merging { border-color:var(–gold) !important; box-shadow:0 0 0 2px rgba(251,191,36,.3) !important; }
+
+/* FOLDERS */
+.folder-section { margin-bottom:36px; }
+.folder-header {
+display:flex; align-items:center; gap:10px; margin-bottom:14px;
+padding:12px 16px; border-radius:14px;
+background:var(–surface); border:1.5px solid var(–border);
+cursor:pointer; transition:all .22s; user-select:none;
+box-shadow:0 2px 10px rgba(0,0,0,.2);
+}
+.folder-header:hover { border-color:var(–accent); background:var(–surface2); }
+.folder-icon { font-size:1.2rem; transition:transform .2s; }
+.folder-header.open .folder-icon { transform:rotate(10deg); }
+.folder-name { font-family:‘Syne’,sans-serif; font-weight:700; font-size:.95rem; flex:1; }
+.folder-count { font-size:.78rem; color:var(–muted); background:var(–surface2); padding:2px 9px; border-radius:20px; }
+.folder-chevron { color:var(–muted); font-size:.8rem; transition:transform .25s; }
+.folder-header.open .folder-chevron { transform:rotate(90deg); }
+.folder-body { overflow:hidden; transition:max-height .3s ease, opacity .25s; max-height:0; opacity:0; }
+.folder-body.open { max-height:2000px; opacity:1; }
+.folder-actions { display:flex; gap:6px; align-items:center; }
+.folder-rename-btn,.folder-delete-btn {
+background:none; border:none; cursor:pointer; font-size:.85rem; padding:3px 6px;
+border-radius:6px; color:var(–muted) !important; -webkit-text-fill-color:var(–muted) !important;
+transition:all .15s;
+}
+.folder-rename-btn:hover { color:var(–accent) !important; -webkit-text-fill-color:var(–accent) !important; background:rgba(108,99,255,.1); }
+.folder-delete-btn:hover { color:#ff9bb0 !important; -webkit-text-fill-color:#ff9bb0 !important; background:rgba(255,101,132,.1); }
+
+/* set-card folder indicator */
+.set-folder-badge {
+display:inline-flex; align-items:center; gap:3px; font-size:.7rem; padding:2px 7px;
+border-radius:20px; background:var(–surface2); color:var(–muted);
+border:1px solid var(–border); margin-left:4px;
+}
+
+/* modal */
+.modal-overlay {
+position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(6px);
+z-index:300; display:flex; align-items:center; justify-content:center;
+opacity:0; pointer-events:none; transition:opacity .2s;
+}
+.modal-overlay.open { opacity:1; pointer-events:all; }
+.modal {
+background:var(–surface); border:1.5px solid var(–border); border-radius:20px;
+padding:28px; max-width:440px; width:90%; box-shadow:0 24px 60px rgba(0,0,0,.5);
+transform:translateY(14px) scale(.97); transition:transform .22s;
+}
+.modal-overlay.open .modal { transform:translateY(0) scale(1); }
+.modal h3 { font-family:‘Syne’,sans-serif; font-size:1.15rem; font-weight:700; margin-bottom:8px; }
+.modal p  { color:var(–muted); font-size:.9rem; margin-bottom:18px; line-height:1.5; }
+.modal-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:20px; }
+.modal-list { display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto; margin-bottom:4px; }
+.modal-folder-item {
+display:flex; align-items:center; gap:10px; padding:10px 14px;
+border-radius:12px; background:var(–surface2); border:1.5px solid var(–border);
+cursor:pointer; transition:all .18s;
+}
+.modal-folder-item:hover { border-color:var(–accent); background:rgba(108,99,255,.08); }
+.modal-folder-item.selected { border-color:var(–accent); background:rgba(108,99,255,.14); }
+.modal-folder-item .mfi-name { font-size:.92rem; font-weight:500; flex:1; }
+.modal-folder-item .mfi-count { font-size:.75rem; color:var(–muted); }
+.modal-none-item { padding:10px 14px; border-radius:12px; background:var(–surface2); border:1.5px dashed var(–border); cursor:pointer; transition:all .18s; color:var(–muted); font-size:.88rem; text-align:center; }
+.modal-none-item:hover { border-color:var(–accent2); color:var(–accent2) !important; -webkit-text-fill-color:var(–accent2) !important; }
+.modal-new-folder { display:flex; gap:8px; margin-top:12px; }
 .set-card-title { font-family:‘Syne’,sans-serif; font-weight:700; font-size:1rem; margin-bottom:6px; }
 .set-card-meta { color:var(–muted); font-size:.82rem; display:flex; gap:10px; align-items:center; margin-bottom:14px; }
 .badge { background:var(–surface2); padding:2px 9px; border-radius:20px; font-size:.78rem; color:var(–muted); }
@@ -386,7 +471,29 @@ nav{padding:0 14px;}
 <canvas id="confetti-canvas"></canvas>
 
 <nav>
-  <div class="logo" onclick="showPage('home')">⚡ FlashLearn</div>
+  <div class="logo" onclick="showPage('home')"><pre>███████╗██╗      █████╗ ███████╗██╗  ██╗
+██╔════╝██║     ██╔══██╗██╔════╝██║  ██║
+█████╗  ██║     ███████║███████╗███████║
+██╔══╝  ██║     ██╔══██║╚════██║██╔══██║
+██║     ███████╗██║  ██║███████║██║  ██║
+╚═╝     ╚══════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
+██╗     ███████╗ █████╗ ██████╗ ███╗   ██╗
+██║     ██╔════╝██╔══██╗██╔══██╗████╗  ██║
+██║     █████╗  ███████║██████╔╝██╔██╗ ██║
+██║     ██╔══╝  ██╔══██║██╔══██╗██║╚██╗██║
+███████╗███████╗██║  ██║██║  ██║██║ ╚████║
+╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝</pre><pre class="bolt-art">      ████
+     ████ 
+    ████  
+   ████   
+  ███████ 
+ ████████ 
+    ████  
+   ████   
+  ████    
+ ████     
+████      
+███       </pre></div>
   <div class="nav-links">
     <button class="nav-btn active" onclick="showPage('home')">Accueil</button>
     <button class="nav-btn" onclick="showPage('create')">Créer</button>
@@ -575,6 +682,23 @@ nav{padding:0 14px;}
   </div>
 
 </div><!-- /app -->
+
+<!-- FOLDER MODAL -->
+
+<div class="modal-overlay" id="folder-modal">
+  <div class="modal">
+    <h3 id="folder-modal-title">Déplacer dans un dossier</h3>
+    <p id="folder-modal-desc">Choisis un dossier pour ce set, ou crée-en un nouveau.</p>
+    <div class="modal-list" id="folder-modal-list"></div>
+    <div class="modal-new-folder">
+      <input class="input-field" id="new-folder-name" placeholder="Nouveau dossier…" style="flex:1;font-size:.88rem;padding:9px 12px">
+      <button class="btn btn-accent btn-sm" onclick="createFolderFromModal()">Créer</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" onclick="closeFolderModal()">Annuler</button>
+    </div>
+  </div>
+</div>
 <div id="toast"></div>
 
 <script>
@@ -643,9 +767,40 @@ function renderHome() {
     c.innerHTML = '<div class="empty"><div class="empty-icon">📚</div><h3>Aucun set pour l\'instant</h3><p>Crée ton premier set ou importe un fichier JSON.</p></div>';
     return;
   }
-  var actions = '<div class="section-row"><div class="section-title">Mes sets ('+sets.length+')</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-ghost btn-sm" onclick="startMergeMode()">🔀 Fusionner des sets</button><button class="btn btn-ghost btn-sm" onclick="exportAll()">⬇ Tout exporter</button></div></div>';
-  var grid = '<div class="sets-grid">'+sets.map(function(s){ return setCardHTML(s); }).join('')+'</div>';
-  c.innerHTML = actions + grid;
+  var html = '<div class="section-row"><div class="section-title">Mes sets ('+sets.length+')</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-ghost btn-sm" onclick="startMergeMode()">🔀 Fusionner</button><button class="btn btn-ghost btn-sm" onclick="exportAll()">⬇ Tout exporter</button></div></div>';
+
+  // Render folders first
+  folders.forEach(function(folder) {
+    var folderSets = sets.filter(function(s){ return s.folderId === folder.id; });
+    var isOpen = folder.open !== false;
+    html += '<div class="folder-section">';
+    html += '<div class="folder-header '+(isOpen?'open':'')+'" onclick="toggleFolder(\''+folder.id+'\')">' +
+      '<span class="folder-icon">'+(isOpen?'📂':'📁')+'</span>' +
+      '<span class="folder-name">'+escHtml(folder.name)+'</span>' +
+      '<span class="folder-count">'+folderSets.length+' set'+(folderSets.length!==1?'s':'')+'</span>' +
+      '<div class="folder-actions" onclick="event.stopPropagation()">' +
+        '<button class="folder-rename-btn" onclick="renameFolder(\''+folder.id+'\')">✏️</button>' +
+        '<button class="folder-delete-btn" onclick="deleteFolder(\''+folder.id+'\')">🗑</button>' +
+      '</div>' +
+      '<span class="folder-chevron">▶</span>' +
+    '</div>';
+    html += '<div class="folder-body '+(isOpen?'open':'')+'">';
+    if (folderSets.length) {
+      html += '<div class="sets-grid" style="padding-top:4px">'+folderSets.map(function(s){ return setCardHTML(s); }).join('')+'</div>';
+    } else {
+      html += '<div style="padding:18px 4px;color:var(--muted);font-size:.88rem">Aucun set dans ce dossier.</div>';
+    }
+    html += '</div></div>';
+  });
+
+  // Unfiled sets
+  var unfiled = sets.filter(function(s){ return !s.folderId; });
+  if (unfiled.length) {
+    if (folders.length) html += '<div class="section-row" style="margin-top:8px"><div class="section-title" style="font-size:.82rem">Sans dossier</div></div>';
+    html += '<div class="sets-grid">'+unfiled.map(function(s){ return setCardHTML(s); }).join('')+'</div>';
+  }
+
+  c.innerHTML = html;
 }
 
 function setCardHTML(s) {
@@ -659,6 +814,7 @@ function setCardHTML(s) {
       '<button class="tag tag-merge" id="mtag-'+s.id+'" onclick="toggleMerge(\''+s.id+'\')">🔀</button>' +
       '<button class="tag tag-edit"  onclick="editSet(\''+s.id+'\')">✏️</button>' +
       '<button class="tag tag-export" onclick="exportSet(\''+s.id+'\')">⬇</button>' +
+      '<button class="tag" style="background:rgba(99,179,237,.12);color:#93c5fd!important;-webkit-text-fill-color:#93c5fd!important" onclick="openFolderModal(\''+s.id+'\')">📁</button>' +
       '<button class="tag tag-del"   onclick="deleteSet(\''+s.id+'\')">🗑</button>' +
     '</div>' +
   '</div>';
@@ -1218,6 +1374,87 @@ document.addEventListener('keydown',function(e){
     if(e.key==='ArrowLeft')prevCard();
     if(e.key==='ArrowRight')nextCard();
   }
+});
+
+// ═══════════════════════════════════════════
+//  FOLDERS
+// ═══════════════════════════════════════════
+var folders = JSON.parse(localStorage.getItem('flashlearn_folders') || '[]');
+
+function saveFolders() { localStorage.setItem('flashlearn_folders', JSON.stringify(folders)); }
+
+function toggleFolder(id) {
+  var f = folders.find(function(f){ return f.id===id; });
+  if (!f) return;
+  f.open = !f.open;
+  saveFolders(); renderHome();
+}
+
+function renameFolder(id) {
+  var f = folders.find(function(f){ return f.id===id; });
+  if (!f) return;
+  var name = prompt('Renommer le dossier :', f.name);
+  if (!name || !name.trim()) return;
+  f.name = name.trim(); saveFolders(); renderHome();
+}
+
+function deleteFolder(id) {
+  if (!confirm('Supprimer ce dossier ? Les sets resteront mais ne seront plus dans aucun dossier.')) return;
+  folders = folders.filter(function(f){ return f.id!==id; });
+  sets.forEach(function(s){ if(s.folderId===id) delete s.folderId; });
+  saveSets(); saveFolders(); renderHome();
+}
+
+var folderModalSetId = null;
+function openFolderModal(setId) {
+  folderModalSetId = setId;
+  var s = sets.find(function(s){ return s.id===setId; });
+  document.getElementById('folder-modal-title').textContent = 'Dossier pour "'+escHtml(s.title)+'"';
+  document.getElementById('new-folder-name').value = '';
+  renderFolderModalList();
+  document.getElementById('folder-modal').classList.add('open');
+}
+
+function renderFolderModalList() {
+  var s = sets.find(function(s){ return s.id===folderModalSetId; });
+  var currentFid = s ? s.folderId : null;
+  var html = '<div class="modal-none-item" onclick="moveToFolder(null)">🚫 Aucun dossier (retirer)</div>';
+  html += folders.map(function(f){
+    var sel = currentFid===f.id;
+    return '<div class="modal-folder-item'+(sel?' selected':'')+'" onclick="moveToFolder(\''+f.id+'\')">'+
+      '<span style="font-size:1.1rem">'+(sel?'📂':'📁')+'</span>'+
+      '<span class="mfi-name">'+escHtml(f.name)+'</span>'+
+      '<span class="mfi-count">'+sets.filter(function(ss){return ss.folderId===f.id;}).length+' sets</span>'+
+    '</div>';
+  }).join('');
+  document.getElementById('folder-modal-list').innerHTML = html;
+}
+
+function moveToFolder(folderId) {
+  var s = sets.find(function(s){ return s.id===folderModalSetId; });
+  if (!s) return;
+  if (folderId) s.folderId = folderId; else delete s.folderId;
+  saveSets(); closeFolderModal(); renderHome();
+  showToast(folderId ? '📁 Set déplacé !' : 'Set retiré du dossier');
+}
+
+function createFolderFromModal() {
+  var name = document.getElementById('new-folder-name').value.trim();
+  if (!name) { showToast('Donne un nom au dossier !'); return; }
+  var folder = { id:'fl_'+Date.now(), name:name, open:true };
+  folders.push(folder);
+  saveFolders();
+  // Immediately move set into it
+  moveToFolder(folder.id);
+}
+
+function closeFolderModal() {
+  document.getElementById('folder-modal').classList.remove('open');
+  folderModalSetId = null;
+}
+// Close modal on overlay click
+document.getElementById('folder-modal').addEventListener('click', function(e){
+  if (e.target === this) closeFolderModal();
 });
 
 renderHome();
