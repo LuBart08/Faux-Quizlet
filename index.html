@@ -298,6 +298,24 @@ background:none; border:none; color:var(–muted) !important; -webkit-text-fill-
 font-family:‘DM Sans’,sans-serif; font-size:.85rem; cursor:pointer; padding:4px 8px; border-radius:8px; transition:all .2s; margin-left:auto;
 }
 .write-skip-btn:hover { color:var(–text) !important; -webkit-text-fill-color:var(–text) !important; background:var(–surface2); }
+/* HINT */
+.hint-box {
+margin-top:12px; padding:10px 14px; border-radius:10px;
+background:rgba(108,99,255,.1); border:1px solid rgba(108,99,255,.25);
+font-family:‘DM Sans’,sans-serif; font-size:.95rem; letter-spacing:.15em;
+color:#a5a1ff !important; -webkit-text-fill-color:#a5a1ff !important;
+display:none; animation:fadeUp .2s;
+}
+.hint-box.show { display:block; }
+.hint-label { font-size:.68rem; text-transform:uppercase; letter-spacing:1px; color:var(–muted); margin-bottom:5px; display:block; letter-spacing:1px; }
+/* OVERRIDE */
+.btn-override {
+background:rgba(251,191,36,.1); color:var(–gold) !important; -webkit-text-fill-color:var(–gold) !important;
+border:1px dashed rgba(251,191,36,.4); font-family:‘DM Sans’,sans-serif; font-size:.82rem;
+padding:6px 13px; border-radius:9px; cursor:pointer; transition:all .2s; display:none;
+}
+.btn-override:hover { background:rgba(251,191,36,.22); border-style:solid; }
+.btn-override.show { display:inline-flex; align-items:center; gap:5px; }
 .write-streak { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
 .streak-dot { width:9px; height:9px; border-radius:50%; background:var(–border); transition:background .3s; flex-shrink:0; }
 .streak-dot.ok   { background:var(–accent3); } .streak-dot.ko { background:var(–accent2); } .streak-dot.sk { background:var(–gold); }
@@ -523,11 +541,17 @@ nav{padding:0 14px;}
         <div class="write-prompt" id="write-prompt"></div>
         <textarea class="write-answer-input" id="write-input" placeholder="Tape ta réponse… (Entrée pour valider)" rows="2"
           onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();checkWrite();}"></textarea>
+        <div class="hint-box" id="hint-box">
+          <span class="hint-label">💡 Indice</span>
+          <span id="hint-text"></span>
+        </div>
         <div class="write-feedback" id="write-feedback"></div>
         <div class="write-actions">
           <button class="btn btn-accent btn-md" id="write-submit-btn" onclick="checkWrite()">Vérifier ↵</button>
           <button class="btn btn-ghost btn-md"  id="write-next-btn"   style="display:none" onclick="nextWrite()">Suivant →</button>
+          <button class="btn-override" id="write-override-btn" onclick="overrideCorrect()">✋ J'avais raison</button>
           <button class="write-skip-btn" id="write-skip-btn" onclick="skipWrite()">Passer</button>
+          <button class="write-skip-btn" id="write-hint-btn" onclick="showHint()" style="margin-left:0">💡 Indice</button>
           <div class="write-streak" id="write-streak"></div>
         </div>
       </div>
@@ -1003,7 +1027,7 @@ function restartTest(){ startTest(cs.id); }
 var wCards=[],wIdx=0,wOk=0,wAlmost=0,wKo=0,wStreak=[],wMissed=[],wAnswered=false;
 function startWrite(id){
   cs=sets.find(function(s){return s.id===id;});
-  wCards=shuffle(cs.cards.slice()); wIdx=wOk=wAlmost=wKo=0; wStreak=[]; wMissed=[]; wAnswered=false;
+  wCards=shuffle(cs.cards.slice()); wIdx=wOk=wAlmost=wKo=0; wStreak=[]; wMissed=[]; wAnswered=false; wHintUsed=false;
   document.getElementById('write-set-name').textContent=cs.title;
   document.getElementById('write-results').style.display='none';
   document.getElementById('write-content').style.display='block';
@@ -1020,6 +1044,13 @@ function showWQ(){
   document.getElementById('write-submit-btn').style.display='';
   document.getElementById('write-next-btn').style.display='none';
   document.getElementById('write-skip-btn').style.display='';
+  document.getElementById('write-hint-btn').style.display='';
+  // Reset hint
+  var hb=document.getElementById('hint-box'); hb.classList.remove('show');
+  document.getElementById('hint-text').textContent='';
+  wHintUsed=false;
+  // Reset override
+  document.getElementById('write-override-btn').classList.remove('show');
   wAnswered=false; renderStreak(); setTimeout(function(){inp.focus();},80);
 }
 function checkWrite(){
@@ -1033,8 +1064,44 @@ function checkWrite(){
   document.getElementById('write-skip-btn').style.display='none';
   var nb=document.getElementById('write-next-btn');nb.style.display='';nb.textContent=wIdx===wCards.length-1?'Voir les résultats':'Suivant →';
   if(res==='correct'){wOk++;wStreak.push('ok');inp.classList.add('s-ok');fb.innerHTML='✓ Correct !';fb.className='write-feedback show wf-good';}
-  else if(res==='almost'){wAlmost++;wMissed.push(wCards[wIdx]);wStreak.push('sk');inp.classList.add('s-almost');fb.innerHTML='🔶 Presque ! Réponse : <strong>'+escHtml(exp)+'</strong>';fb.className='write-feedback show wf-almost';}
-  else{wKo++;wMissed.push(wCards[wIdx]);wStreak.push('ko');inp.classList.add('s-ko');fb.innerHTML='✗ Incorrect. Réponse : <strong>'+escHtml(exp)+'</strong>';fb.className='write-feedback show wf-bad';}
+  else if(res==='almost'){wAlmost++;wMissed.push(wCards[wIdx]);wStreak.push('sk');inp.classList.add('s-almost');fb.innerHTML='🔶 Presque ! Réponse : <strong>'+escHtml(exp)+'</strong>';fb.className='write-feedback show wf-almost';document.getElementById('write-override-btn').classList.add('show');}
+  else{wKo++;wMissed.push(wCards[wIdx]);wStreak.push('ko');inp.classList.add('s-ko');fb.innerHTML='✗ Incorrect. Réponse : <strong>'+escHtml(exp)+'</strong>';fb.className='write-feedback show wf-bad';document.getElementById('write-override-btn').classList.add('show');}
+  renderStreak();
+}
+// ── HINT ──
+var wHintUsed=false;
+function showHint(){
+  if(wAnswered||wHintUsed)return;
+  wHintUsed=true;
+  var ans=wCards[wIdx].def;
+  // Build hint: first letter + blanks for each remaining char, spaces preserved
+  var hint=ans.split('').map(function(ch,i){
+    if(ch===' ')return ' ';
+    if(i===0)return ch;
+    return '_';
+  }).join('');
+  document.getElementById('hint-text').textContent=hint;
+  document.getElementById('hint-box').classList.add('show');
+  document.getElementById('write-hint-btn').style.display='none';
+}
+// ── OVERRIDE ──
+function overrideCorrect(){
+  // User claims they were right — convert last wrong/almost to correct
+  var idx=wStreak.length-1;
+  if(idx<0)return;
+  var prev=wStreak[idx];
+  if(prev==='ok')return; // already correct, nothing to do
+  // Revert counts
+  if(prev==='sk'){wAlmost--;}else{wKo--;}
+  // Remove from missed
+  wMissed=wMissed.filter(function(c){return c!==wCards[wIdx];});
+  // Set correct
+  wOk++; wStreak[idx]='ok';
+  var inp=document.getElementById('write-input');
+  inp.className='write-answer-input s-ok';
+  document.getElementById('write-feedback').innerHTML='✓ Compté comme correct !';
+  document.getElementById('write-feedback').className='write-feedback show wf-good';
+  document.getElementById('write-override-btn').classList.remove('show');
   renderStreak();
 }
 function scoreAnswer(user,expected){
